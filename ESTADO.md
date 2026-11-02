@@ -14,6 +14,7 @@ _Atualizar ao fim de cada sessão._
 | 7 | Integrar Worktesk e Ferramenta Financeira | ⏳ |
 
 ## Decisões tomadas
+- 02/11 — Commander, SGM e Hub ganham repositórios privados no GitHub; regra: `.gitignore` com `.env*`, `node_modules`, `.vercel` antes do primeiro commit.
 - 02/11 — Apply fora do escopo.
 - 02/11 — Donos: Adrian = Commander e SGM; Railan = CRM (Adrian tem acesso).
 
@@ -25,12 +26,12 @@ _Atualizar ao fim de cada sessão._
 - Religar ou apagar a tarefa "Gerar docs formulários ABRimob" (desligada desde 19/10)?
 - Manter as sincronizações da Meta (3 caminhos) ou unificar? `sync-meta-ops` já está desligada desde 09/09: apagar?
 - SGM: o `.env.local` aponta para o Supabase agwhfxdokegptwlzdnah, mas o schema `sgm` está no ABRii memória. Qual é o oficial? E o projeto `abrimob-central` (wjdqaexbjcpyptjcsxdd), o que é?
-- Commander, SGM e Hub não têm git: criar repositórios no GitHub?
 - Religar ou apagar as automações locais desligadas (WhatsApp do dia 8h40, avisos 8h15/16h45) e a tarefa "pendências GTIA"?
 - Ferramenta Financeira está no Firebase: confirmar com Railan e onde fica o código.
 - Worktesk tem Supabase próprio (yanvqenzhdzbuxrbeyit): migrar para o ABRii memória ou ligar por fora?
 - Limpar `crm.meta_cron_log` (1,9 mi linhas)?
 
 ## Histórico
+- 02/11 — Criados os repositórios privados `abrii-commander` (386fc83), `sgm-abrimob` (1d4c434) e `abrii-hub` (039df72). Conferido no GitHub: privados e sem `.env`/`node_modules`/`.vercel`/`.next`. Descoberto que o Commander é um código só com duas instâncias na Vercel (abrii e abrimob), o que não é duplicação.
 - 02/11 — `/varredura` no Mac do Adrian. **Novo:** Worktesk = Supabase yanvqenzhdzbuxrbeyit; Financeiro = Firebase; conexão CRM↔Commander existe no código (webhook "Ganhou" + cron sync); 20+ crons Vercel; 3 launchd e 1 tarefa agendada do Claude, todos desligados. **Mudou:** `sync-meta-ops` está desligada (mapa dizia ativa). **Sumiu/não achado:** tarefa "Gerar docs formulários ABRimob" e automação de contratos ABRimob não estão neste Mac. **Duplicado:** 3 caminhos de sync Meta; 3 cópias locais do GTIA (gtia-prosperity, gtia-CLIENTE antigas); 2 Commanders na Vercel (abrii-commander, abrimob-commander).
 - 02/11 — Mapa do banco feito; migração 001 validada (28 clientes, 64/64 vínculos, sem Apply); comando `/varredura` criado.

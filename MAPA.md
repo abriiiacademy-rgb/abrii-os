@@ -58,7 +58,7 @@ Lista completa com dono e status: `INVENTARIO.md`.
 ## Pontos de atenção
 - Sincronizações da Meta: `sync-meta-ads` (banco → `crm`), `meta-ads-snapshot` (Vercel do CRM) e `gtia-coletar` (GTIA). `sync-meta-ops` está desligada.
 - Edge Functions estão no repositório do Orion (`abrii-painel`), excluído do escopo.
-- Commander, SGM e Hub **não têm git**.
+- Commander, SGM e Hub versionados desde 02/11 em repositórios privados (`abriiiacademy-rgb/abrii-commander`, `sgm-abrimob`, `abrii-hub`).
 - `crm.meta_cron_log` com ~1,9 mi linhas sem limpeza.
 - Visões `central_*` do Commander não respeitam RLS (rodam como dono).
 - Nenhuma migração registrada no Supabase: o histórico de mudanças do banco só existe nos chats.

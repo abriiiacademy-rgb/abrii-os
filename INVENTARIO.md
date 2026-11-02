@@ -9,18 +9,20 @@ _Gerado pela `/varredura`. Cada sócio atualiza só a seção da sua máquina. N
 
 | Ferramenta | Pasta local | Repositório | Último commit | Vercel | Banco (Supabase) |
 |---|---|---|---|---|---|
-| Commander | `~/Desktop/abrii-commander` | **sem git** | — | `abrii-commander` (e `abrimob-commander`) | huwlikdosgknyfoykjwn |
-| SGM | `~/Desktop/sgm-abrimob` | **sem git** | — | `sgm-abrimob` → sgm.abriiaceleradora.com.br | `.env.local` aponta para **agwhfxdokegptwlzdnah** (o schema `sgm` está em huwlikdosgknyfoykjwn — conferir) |
+| Commander | `~/Desktop/abrii-commander` | abriiiacademy-rgb/abrii-commander (privado, criado 02/11) | 02/11 primeiro commit | `abrii-commander` (e `abrimob-commander`) | huwlikdosgknyfoykjwn |
+| SGM | `~/Desktop/sgm-abrimob` | abriiiacademy-rgb/sgm-abrimob (privado, criado 02/11) | 02/11 primeiro commit | `sgm-abrimob` → sgm.abriiaceleradora.com.br | `.env.local` aponta para **agwhfxdokegptwlzdnah** (o schema `sgm` está em huwlikdosgknyfoykjwn — conferir) |
 | GTIA / Jarvis | `~/Desktop/GTIA - Gestão de trafego com IA` | abriiiacademy-rgb/gtia | 22/10 "Média mensal…" | `gtia` | huwlikdosgknyfoykjwn (19 migrações locais, última `0019_fatos_cliente.sql`) |
 | GTIA (cópias antigas) | `~/Desktop/gtia-prosperity` (27/08), `~/Desktop/gtia-CLIENTE` (04/08) | mesmo repo gtia | — | — | — |
 | CRM (ABRiilead) | `~/Desktop/abrii-lead-crm` | abriiiacademy-rgb/abrii-lead-crm | 29/09 local (GitHub 24/10 → **local desatualizado**) | `abrii-lead-crm` → crm.abriiaceleradora.com.br | huwlikdosgknyfoykjwn |
 | Worktesk | `~/Desktop/abrii-worktesk` | abriiiacademy-rgb/abrii-worktesk | 04/10 | `abrii-worktesk` | **yanvqenzhdzbuxrbeyit** (projeto próprio) |
-| Portal / Hub | `~/Desktop/abrii-hub` | **sem git** | — | `abrii-hub` | huwlikdosgknyfoykjwn |
+| Portal / Hub | `~/Desktop/abrii-hub` | abriiiacademy-rgb/abrii-hub (privado, criado 02/11) | 02/11 primeiro commit | `abrii-hub` | huwlikdosgknyfoykjwn |
 | Orion (excluído) | `~/Desktop/abrii-painel` | abriiiacademy-rgb/ABRii-Painel | 22/06 | `abrii-prod` | huwlikdosgknyfoykjwn — é a origem das Edge Functions `sync-meta-ads`/`sync-meta-ops` |
 | Apply (fora do escopo) | `~/Desktop/abrii-apply` | abrii-apply | 29/06 | `abrii-apply` | huwlikdosgknyfoykjwn |
 | Petrum Lead (CRM de terceiro) | `~/Desktop/petrum-lead-extracted` | sem git | — | `abrii-lead` | config.toml = zmakdhrixqwbsjqwkeio |
 | Ferramenta Financeira? | não está neste Mac | abriiiacademy-rgb/abrii-asaas-webhook ("Asaas → **Firebase** do dashboard financeiro") | GitHub 27/10 | `abrii-financeiro`, `abrii-asaas-webhook` | **Firebase**, não Supabase |
 | Supabase CLI solto | `~/Desktop/supabase` | — | — | — | linkado a **abrimob-central** (wjdqaexbjcpyptjcsxdd) |
+
+Commander: um código só, publicado em duas instâncias na Vercel (`abrii-commander` e `abrimob-commander`) pelo `deploy.sh abrii|abrimob`. Não é duplicação.
 
 Variáveis de ambiente (só nomes):
 - Commander: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `CRM_SUPABASE_URL`, `CRM_SERVICE_ROLE_KEY`, `COMMANDER_WEBHOOK_TOKEN`
@@ -122,7 +124,7 @@ Só 2 pastas em `~/.claude/projects`: `Desktop` (34 chats) e `abrii-os` (este). 
 - Sem comandos, skills ou agentes globais em `~/.claude/`. Único comando: `/varredura` neste repo.
 
 ## Lacunas
-1. Commander, SGM e Hub **sem git** — o código só existe neste Mac e na Vercel.
+1. ~~Commander, SGM e Hub sem git~~ → resolvido em 02/11: repositórios privados criados, `.gitignore` exclui `.env*`, `node_modules`, `.vercel`, `.next`; conferido no GitHub que nenhum `.env` subiu.
 2. CRM local está ~1 mês atrás do GitHub (Railan commita, Adrian não puxa).
 3. SGM local aponta para outro Supabase (agwhfxdokegptwlzdnah); existe ainda `abrimob-central` (wjdqaexbjcpyptjcsxdd). Qual é o oficial?
 4. Três sincronizações Meta: `sync-meta-ads` (banco), `meta-ads-snapshot` (Vercel do CRM), e `sync-meta-ops` (desligada). GTIA coleta pela própria rotina `coletar`.
