@@ -1,5 +1,5 @@
 # Mapa das ferramentas e conexões
-_Varredura do banco em 02/11/2026; atualizado pela `/varredura` do Mac do Adrian (02/11). Detalhes em `INVENTARIO.md`._
+_Varredura do banco em 02/11/2026; atualizada pela `/varredura` do Mac do Adrian (02/11) e do Railan (03/11). Detalhes em `INVENTARIO.md`._
 
 ## Ferramentas
 
@@ -9,8 +9,8 @@ _Varredura do banco em 02/11/2026; atualizado pela `/varredura` do Mac do Adrian
 | SGM | Supabase `sgm` | `clientes` | Adrian | Funil e lançamentos diários de venda do cliente |
 | GTIA / Jarvis | Supabase `meta_ops` | `clientes` → `contas` | Adrian (confirmar) | Métricas Meta/Google, timeline, fatos, alertas, relatórios, rotinas agendadas |
 | CRM (ABRiilead) | Supabase `crm` | `tenants` | Railan (Adrian tem acesso) | Leads, deals, atividades, integrações Meta/WhatsApp/Chatfuel/3C+, cobrança Asaas |
-| Worktesk | abrii-worktesk.vercel.app — Supabase próprio **yanvqenzhdzbuxrbeyit** | ? | ? | Horas do time, daily e review semanal operacional |
-| Ferramenta Financeira | **Firebase** + Vercel `abrii-financeiro`; Asaas entra por `abrii-asaas-webhook` | ? | Railan | DRE, recebimentos |
+| Worktesk | abrii-worktesk.vercel.app — Supabase próprio **yanvqenzhdzbuxrbeyit** — repo `railanjunior/abrii-worktesk` (pessoal, **não** está na org) | ? | Railan | Horas do time, daily e review semanal operacional |
+| Ferramenta Financeira | **Firebase** confirmado + Vercel `abrii-financeiro` (dashboard HTML) e `abrii-asaas-webhook` (Asaas → Firebase) | ? | Railan | DRE, recebimentos, saldo diário |
 | Portal (hub de login) | Supabase `public` | `organizations` | ? | `tools` + `tool_access`: Worktesk, Orion, ABRiilead, Apply, SGM |
 
 Fora do escopo: Apply (`apply`). Orion já foi decidido excluir.
@@ -45,7 +45,9 @@ Fora do escopo: Apply (`apply`). Orion já foi decidido excluir.
 | Contratos de fechamento ABRimob | ? | "automação própria na nuvem" | ? | **não localizada** |
 | Crons Vercel do Commander (lembrete-sgm, entrega, sync CRM, sync-pixel-leads) | diários | Vercel | Commander | ativas |
 | Crons Vercel do CRM (meta-leads-sync, meta-ads-snapshot, chatfuel ×4, close-orphan-calls, billing, refresh-token, pgrst-health) | 2 min a semanal | Vercel | CRM | ativas |
-| Crons Vercel do Worktesk (review-cron, daily-cron, daily-reminder) | diários | Vercel | Worktesk | ativas |
+| Crons Vercel do Worktesk (review-cron, daily-cron, daily-reminder, abrimob-form-reminder) | diários | Vercel | Worktesk | ativas |
+| GH Actions daily-trigger (Worktesk, Couto, Star) | seg–sex 06:45 BRT | GitHub Actions, backup do cron Vercel, idempotente | Worktesk + dailies | ativas (descoberto 03/11) |
+| abrii-asaas-webhook /api/saldo | diário 11h UTC | Vercel | Financeiro | ativa (descoberto 03/11) |
 | WhatsApp do dia + avisos 8h15/16h45 | dias úteis | launchd no Mac do Adrian | GTIA | **desligadas** (ago) |
 | Lembrete pendências GTIA | — | tarefa agendada do Claude | GTIA | **desligada** (12/08) |
 | Daily ABRimob | frase "Pode rodar o Daily" | chat | Meta Ads | manual |

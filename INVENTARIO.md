@@ -135,5 +135,107 @@ Só 2 pastas em `~/.claude/projects`: `Desktop` (34 chats) e `abrii-os` (este). 
 
 ---
 
-# Mac do Railan
-_Ainda não rodado._
+# Mac do Railan — varredura 03/11/2026
+
+## Ferramentas (de escopo)
+
+| Ferramenta | Pasta local | Repositório | Último commit local | Vercel | Banco |
+|---|---|---|---|---|---|
+| CRM (ABRiilead) | `~/Desktop/claude code/abrii-crm` | abriiiacademy-rgb/abrii-lead-crm | 10/08 (**local 3 meses atrás** — GitHub está em 03/11 10h07) | `abrii-lead-crm` → crm.abriiaceleradora.com.br | huwlikdosgknyfoykjwn |
+| Worktesk | `~/Desktop/claude code/abrii-worktesk` | **railanjunior/abrii-worktesk** (privado — **NÃO existe `abriiiacademy-rgb/abrii-worktesk`**, mapa estava errado) | 27/10 "IA: Review e Daily em Sonnet 5.5 (de Opus)" | `abrii-worktesk` | yanvqenzhdzbuxrbeyit |
+| Ferramenta Financeira (dashboard) | `~/Desktop/claude code/abrii-dashboard` | railanjunior/abrii-dashboard (público) | 27/10 "Radar: data 'conferido em' carimba automática" | GitHub Pages + `abrii-financeiro` na Vercel | **Firebase** (confirmado) |
+| Ferramenta Financeira (webhook) | `~/Desktop/claude code/abrii-asaas-webhook` | abriiiacademy-rgb/abrii-asaas-webhook | 27/10 "Saldo: gatilho público ?refresh=1" | `abrii-asaas-webhook` | Firebase |
+
+Fora do escopo mas rodando no mesmo Mac: `abrii-adops` (MCP próprio de Meta Ads, inativo desde 10/08), `abrii-apply`, `abrii-fieldwork`, `apple-drop` (produção, rifadrop.com.br), `chales-encanto`, `obraviva`, `couto-daily`, `star-daily`, `daily-abrii`, `abrii-review-automation`, `abrii-sdr-ote`, `ditudo-dashboard`, `pacto-app`, `abrimob-*` (vários entregáveis), `pratica-*`, `solartech-*`. Total: ~70 pastas em `~/Desktop/claude code/`.
+
+Jarvis.py solto em `~/Desktop/jarvis.py` (projeto abandonado) — a memória do Railan registra **chaves Binance expostas** nesse arquivo, falta revogar.
+
+Variáveis de ambiente (só nomes):
+- Worktesk: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `DAILY_CRON_TOKEN`, `DISCORD_WEBHOOK_URL`, `ANTHROPIC_API_KEY`
+- CRM (abrii-crm local): mesmas do Mac do Adrian
+- abrii-dashboard: client-side (chaves Firebase no HTML)
+- abrii-asaas-webhook: `FIREBASE_SERVICE_ACCOUNT`, `ASAAS_WEBHOOK_TOKEN`, `ASAAS_API_KEY`
+
+## Vercel (conta `abriiiacademy-2260`)
+
+55+ projetos ativos. Os de escopo: `abrii-lead-crm`, `abrii-worktesk`, `abrii-asaas-webhook`, `abrii-financeiro`, `abrii-commander`, `abrimob-commander`, `sgm-abrimob`, `gtia`, `abrii-hub`. Resto são entregáveis de clientes.
+
+GitHub: `gh` logado como **railanjunior** (não como `abriiiacademy-rgb` — org acessada via colaborador).
+
+## Conexões adicionais descobertas
+
+- **GitHub Actions como backup dos crons Vercel**: `abrii-worktesk`, `couto-daily` e `star-daily` têm cada um `.github/workflows/daily-trigger.yml` disparando às 09:45 UTC (06:45 BRT) seg–sex, idempotente — se a Vercel já postou, vira no-op.
+- **Firebase ↔ Dashboard**: confirmado. Asaas → `abrii-asaas-webhook` grava em `/asaas_inbox` do Firebase, dashboard lê e lança no financeiro. Cron Vercel `/api/saldo` diário 11h UTC.
+
+## Automações
+
+| Nome | O que faz | Gatilho | Onde roda | Ferramenta | Dono | Status |
+|---|---|---|---|---|---|---|
+| abrii-asaas-webhook /api/saldo | atualiza saldo da conta no dashboard | diário 11h UTC | cron Vercel | Financeiro | Railan | ativa |
+| abrii-asaas-webhook ?refresh=1 | gatilho público (botão "atualizar agora" do dashboard) | manual via dashboard | Vercel | Financeiro | Railan | ativa |
+| Worktesk GH Actions daily-trigger | backup do cron Vercel daily-cron | 09:45 UTC seg–sex | GitHub Actions | Worktesk | Railan | ativa |
+| Couto daily GH Actions | mesma coisa | 09:45 UTC seg–sex | GitHub Actions | Couto Saúde | Railan | ativa |
+| Star daily GH Actions | mesma coisa | 09:45 UTC seg–sex | GitHub Actions | Star Proteção | Railan | ativa |
+| asaas-chat-humano | checa e-mail + chat Asaas por resposta humana sobre desbloqueio Pix | tarefa agendada Claude | este Mac | — | Railan | **órfã** (desbloqueio já resolveu, tarefa não foi apagada) |
+| valida-badge-verde-facebook-ads | confirma que badge "Ao vivo" do CRM virou verde após cron | tarefa agendada Claude | este Mac | CRM | Railan | **órfã** (checagem única, já cumprida) |
+
+Nenhum `crontab` local, nenhum `launchctl` custom (0 serviços fora do padrão macOS). Diferente do Mac do Adrian, que tem 3 launchds (todos desligados).
+
+## Skills, comandos e MCPs locais
+
+- `~/.claude/commands/`: **vazio**
+- `~/.claude/agents/`: **vazio**
+- `~/.claude/skills/`: 1 skill → `checkup` (DISC do prospect ABRimob via Instagram)
+- `~/.claude/scheduled-tasks/`: 2 → `asaas-chat-humano`, `valida-badge-verde-facebook-ads` (ambas órfãs, ver tabela acima)
+- `~/.claude/settings.json`: só marketplace de plugins `claude-plugins-official` e `agentPushNotifEnabled`
+- Nenhum `.mcp.json` nas pastas de ferramentas de escopo (único `.mcp.json` encontrado: `squad de marketing - agentes/opensquad/`, fora de escopo)
+- Conectores da conta claude.ai: Supabase (ABRii memória), Gmail, Google Drive, Notion, Canva, Meta Ads (Pipeboard), Google Ads (Pipeboard), ElevenLabs, Claude Docs — mesmo set do Adrian.
+
+## Chats de desenvolvimento (Claude Code)
+
+Pastas em `~/.claude/projects/`:
+- `-Users-railanjunior-Desktop-claude-code` → **107 chats** (toda a atividade de dev acontece a partir dessa pasta única)
+- `-Users-railanjunior-Documents-abrii-os` → este chat (criado hoje)
+
+Chats mais recentes (últimas 48h, com peso em MB sinalizando sessões longas):
+| Última sessão | Tamanho | Observação |
+|---|---|---|
+| 03/11 13:46 | 2,2 MB | atual (abrii-os) |
+| 03/11 13:39 | 62 MB | sessão longa — provável CRM/dashboard |
+| 03/11 13:11 | ~230 MB (3 arquivos) | pico de atividade |
+| 03/11 08:33 | **789 MB** | maior chat já aberto |
+| 02/11 18:08 | 188 MB | grande |
+| 02/11 11:32 | 92 MB | — |
+
+(O Claude Code do Railan nunca separou projetos por pasta — tudo abre a partir de `~/Desktop/claude code/`. Diferente do Adrian, que tem múltiplas pastas raiz.)
+
+## Lacunas
+
+1. **CRM local 3 meses atrás do GitHub** (último commit local 10/08, remoto 03/11 10h07). Railan edita direto na nuvem (Cursor/Chrome ou outro Mac?) e nunca puxa no Desktop. Mesma lacuna do Adrian, invertida.
+2. **Worktesk em repo pessoal** (`railanjunior/abrii-worktesk`), não na org `abriiiacademy-rgb`. O mapa dizia que estava na org, estava errado. Mover pra org ou deixar?
+3. **abrii-adops nunca saiu do rascunho** (último commit 10/08, meta era substituir Pipeboard). Decidir: retomar ou arquivar.
+4. **Jarvis.py no Desktop** com chaves Binance expostas em texto puro — revogar na Binance e apagar o arquivo (projeto abandonado).
+5. **2 tarefas agendadas órfãs** do Claude Code (`asaas-chat-humano`, `valida-badge-verde-facebook-ads`) — ambas já cumpriram, apagar.
+6. **Chat gigante de 789 MB** em `~/.claude/projects/` — pode estar segurando contexto desnecessário; vale verificar se faz sentido arquivar.
+7. **Dashboard vs abrii-financeiro na Vercel**: `abrii-dashboard` publica no GitHub Pages (HTML puro) **e** existe `abrii-financeiro` como projeto Vercel. Confirmar se é a mesma coisa ou dois deploys do mesmo HTML.
+8. Nenhum `.mcp.json` nas ferramentas de escopo — se o CRM/Worktesk fossem ganhar MCP próprio (ex: Supabase apontado por projeto), ainda não aconteceu.
+
+## Comparação com a varredura do Adrian
+
+**Novo nesta varredura:**
+- Firebase confirmado como banco da Ferramenta Financeira (dashboard HTML + webhook); cron `/api/saldo` descoberto.
+- GH Actions `daily-trigger.yml` como backup dos crons Vercel das 3 dailies (Worktesk, Couto, Star).
+- Repositório do Worktesk está em `railanjunior/abrii-worktesk`, não em `abriiiacademy-rgb/abrii-worktesk` como o mapa dizia.
+- 2 tarefas agendadas do Claude Code (órfãs).
+- Skill `checkup` global (DISC via Instagram).
+
+**Confirma o que o Adrian viu:**
+- CRM, Worktesk e Ferramenta Financeira todos no Mac do Railan, com os bancos esperados.
+- Supabase huwlikdosgknyfoykjwn é o banco central do CRM.
+
+**Sumiu/não existe:** Commander, SGM, GTIA, Hub (como esperado — são do Adrian).
+
+**Duplicado/divergente:**
+- Nome local da pasta do CRM: Adrian usa `abrii-lead-crm`, Railan usa `abrii-crm` — mesmo repo.
+- Dashboard financeiro existe em 2 deploys: GitHub Pages + `abrii-financeiro` na Vercel.
+- CRM: Adrian está 1 mês atrás do GitHub, Railan está 3 meses atrás. Nenhum dos 2 Macs tem a versão de produção.
