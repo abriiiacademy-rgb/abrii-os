@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meta do Ciclo · Leads com Perfil (ICP) · ABRii</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F4F3F8; --card:#FFFFFF; --line:#ECEAF2; --ink:#14121F; --muted:#8A8698; --soft:#B9B5C6;
+    --p:#7C3AED; --p2:#5B21B6; --p3:#4C1D95; --lav:#EFE9FD; --lav2:#DCD2FA;
+    --ok:#16A34A; --okbg:#E8F7EE; --warn:#D97706; --warnbg:#FDF3E2; --bad:#DC2626; --badbg:#FDECEC; --gray:#9CA3AF; --graybg:#F1F1F4;
+    --r:14px; --sh:0 1px 2px rgba(20,18,31,.04),0 4px 14px rgba(20,18,31,.05);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);font-family:Inter,system-ui,sans-serif;color:var(--ink);font-size:14px}
+  .wrap{max-width:1180px;margin:0 auto;padding:22px 22px 60px}
+  .crumb{color:var(--p);font-size:13px;text-decoration:none}
+  h1{font-family:Poppins,sans-serif;font-size:22px;font-weight:800;margin:0}
+  .head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+  .sub{color:var(--muted);font-size:13px;margin:2px 0 0}
+  .tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin:18px 0 22px;overflow-x:auto}
+  .tab{padding:10px 12px;color:#5C5870;cursor:pointer;border:0;background:none;font:inherit;font-size:13.5px;white-space:nowrap;border-bottom:2px solid transparent}
+  .tab.on{color:var(--p);border-color:var(--p);font-weight:600}
+  .sec-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+  .sec-head h2{font-family:Poppins,sans-serif;font-size:17px;margin:0}
+  .btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 13px;font:inherit;font-size:13px;cursor:pointer;color:var(--ink)}
+  .btn:hover{border-color:var(--lav2)}
+  .btn.p{background:var(--p);border-color:var(--p);color:#fff;font-weight:600}
+  .grid{display:grid;gap:12px}
+  .g4{grid-template-columns:repeat(4,1fr)} .g2{grid-template-columns:1fr 1fr}
+  @media(max-width:900px){.g4{grid-template-columns:repeat(2,1fr)}.g2{grid-template-columns:1fr}}
+  .card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:16px}
+  .lbl{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:#6E6A80;font-weight:600}
+  .big{font-family:Poppins,sans-serif;font-size:26px;font-weight:800;margin:6px 0 2px}
+  .hint{font-size:12px;color:var(--muted)}
+  .hero{background:linear-gradient(135deg,#8B5CF6,#5B21B6);color:#fff}
+  .hero .lbl,.hero .hint{color:rgba(255,255,255,.85)}
+  .ctitle{font-size:12px;letter-spacing:.07em;text-transform:uppercase;font-weight:700;color:#3B3750;margin:0 0 12px}
+  /* client cards */
+  .clients{grid-template-columns:repeat(4,1fr)}
+  @media(max-width:1000px){.clients{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:560px){.clients,.g4{grid-template-columns:1fr}}
+  .cl{cursor:pointer;transition:transform .12s, box-shadow .12s;position:relative;border:1px solid transparent}
+  .cl:hover{transform:translateY(-2px);border-color:var(--lav2)}
+  .cl .name{font-weight:700;font-size:15px}
+  .cl .seg{font-size:12px;color:var(--muted)}
+  .pct{font-family:Poppins,sans-serif;font-size:30px;font-weight:800;margin:10px 0 0}
+  .range{font-size:12px;color:var(--muted)}
+  .bar{height:8px;background:var(--graybg);border-radius:99px;position:relative;margin:12px 0 8px;overflow:visible}
+  .bar .fill{height:100%;border-radius:99px;background:var(--p)}
+  .bar .fill2{position:absolute;top:0;height:100%;border-radius:99px;background:var(--lav2)}
+  .bar .mark{position:absolute;top:-4px;width:2px;height:16px;background:var(--ink);opacity:.55}
+  .pill{display:inline-flex;white-space:nowrap;align-items:center;gap:5px;font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:99px}
+  .pill.ok{background:var(--okbg);color:var(--ok)} .pill.warn{background:var(--warnbg);color:var(--warn)}
+  .pill.bad{background:var(--badbg);color:var(--bad)} .pill.gray{background:var(--graybg);color:#6B7280}
+  .pill.lav{background:var(--lav);color:var(--p2)}
+  .meta-row{display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap}
+  /* tables */
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{text-align:left;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#6E6A80;font-weight:600;padding:10px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+  td{padding:10px;border-bottom:1px solid var(--line);white-space:nowrap}
+  tr:last-child td{border-bottom:0}
+  .tcard{padding:0;overflow-x:auto}
+  .tot{background:#F7F3FF;color:var(--p2);font-weight:700}
+  .cell{display:inline-block;min-width:54px;text-align:center;padding:4px 8px;border-radius:8px;font-weight:600;font-size:12.5px}
+  .c-ok{background:var(--okbg);color:var(--ok)} .c-warn{background:var(--warnbg);color:var(--warn)} .c-bad{background:var(--badbg);color:var(--bad)} .c-na{background:var(--graybg);color:var(--soft);font-weight:500}
+  .small{font-size:11px;color:var(--muted);display:block;margin-top:2px;font-weight:500}
+  /* funnel */
+  .fun{display:flex;flex-direction:column;align-items:center;gap:4px}
+  .fb{color:#fff;white-space:nowrap;gap:12px;border-radius:10px;padding:11px 14px;display:flex;justify-content:space-between;font-weight:600}
+  .fs{font-size:11px;color:var(--muted)}
+  /* modal */
+  .ov{position:fixed;inset:0;background:rgba(20,18,31,.45);display:none;align-items:flex-start;justify-content:center;padding:30px 14px;overflow-y:auto;z-index:50}
+  .ov.on{display:flex}
+  .modal{background:var(--bg);border-radius:18px;max-width:980px;width:100%;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+  .x{float:right;border:0;background:#fff;border-radius:10px;width:34px;height:34px;font-size:18px;cursor:pointer;box-shadow:var(--sh)}
+  .icp li{margin:6px 0;line-height:1.45}
+  .icp ul{padding-left:18px;margin:6px 0}
+  .rule{display:flex;gap:8px;align-items:flex-start;margin:7px 0;font-size:13px;line-height:1.4}
+  .note{background:var(--lav);color:var(--p3);border-radius:10px;padding:10px 12px;font-size:12.5px;line-height:1.45;margin-top:10px}
+  select.st{font:inherit;font-size:12px;border:1px solid var(--line);border-radius:8px;padding:4px 6px;background:#fff}
+  .seg-ctl{display:inline-flex;background:#fff;border:1px solid var(--line);border-radius:10px;padding:3px}
+  .seg-ctl button{border:0;background:none;padding:6px 11px;border-radius:8px;font:inherit;font-size:12.5px;cursor:pointer;color:#5C5870}
+  .seg-ctl button.on{background:var(--lav);color:var(--p2);font-weight:600}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:8px;justify-content:center}
+  .legend i{display:inline-block;width:14px;height:3px;border-radius:2px;vertical-align:middle;margin-right:5px}
+  .ck td:first-child{font-weight:700}
+  .hide{display:none}
+  svg text{font-family:Inter,sans-serif}
+  input.num{width:64px;font:inherit;font-size:13px;border:1px solid var(--line);border-radius:8px;padding:6px 8px;background:#FAFAFC;text-align:center}
+  input.num:focus{outline:2px solid var(--lav2);background:#fff}
+  .src{font-size:11px;color:var(--muted)}
+  .tagf{display:inline-block;font-size:10.5px;padding:2px 7px;border-radius:99px;background:var(--graybg);color:#6B7280;margin-left:6px}
+  .callout{background:#fff;border-left:4px solid var(--p);border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.5;box-shadow:var(--sh);margin-bottom:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="crumb" href="#">← Hub de ferramentas</a>
+  <div class="head" style="margin-top:6px">
+    <h1>Meta do Ciclo · Leads com Perfil</h1>
+    <span class="pill lav">Gestor de Resultado · Tráfego Pago</span>
+  </div>
+  <p class="sub" id="subline"></p>
+
+  <div class="tabs">
+    <button class="tab on" data-t="painel">Painel</button>
+    <button class="tab" data-t="mql">Critérios de MQL</button>
+    <button class="tab" data-t="retorno">Retorno do Cliente</button>
+    <button class="tab" data-t="semanal">Consolidação Semanal</button>
+    <button class="tab" data-t="diario">Pré-filtro Diário</button>
+    <button class="tab" data-t="linha">Linha da Meta</button>
+  </div>
+
+  <!-- PAINEL -->
+  <section id="t-painel">
+    <div class="sec-head">
+      <div><h2>Painel</h2><div class="sub">Enquanto o cliente não dá o retorno, o card mostra o <b>pré-filtro do formulário</b> (lilás). Com o retorno lançado, passa a mostrar a <b>% oficial</b> (roxo).</div></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn" id="importBtn">Importar</button>
+        <button class="btn" id="exportBtn">Exportar dados</button>
+        <input type="file" id="importFile" accept=".json" class="hide">
+      </div>
+    </div>
+    <div class="grid g4" id="kpis"></div>
+    <div class="grid clients" id="clients" style="margin-top:12px"></div>
+    <div class="grid g2" style="margin-top:12px">
+      <div class="card"><p class="ctitle">Funil da carteira · ciclo</p><div class="fun" id="funAll"></div></div>
+      <div class="card"><p class="ctitle">Progressão semanal da carteira vs. 30%</p><div id="chartAll"></div>
+        <div class="legend"><span><i style="background:var(--p)"></i>Retorno do cliente</span><span><i style="background:#C4B5FD"></i>Pré-filtro formulário</span><span><i style="height:0;border-top:2px dashed #A78BFA"></i>Meta 30%</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MQL -->
+  <section id="t-mql" class="hide">
+    <div class="sec-head"><div><h2>Critérios de MQL por cliente</h2><div class="sub">O que o cliente definiu como lead com perfil e a régua usada no pré-filtro do formulário.</div></div></div>
+    <div class="grid g2" id="mqlGrid"></div>
+  </section>
+
+  <!-- RETORNO -->
+  <section id="t-retorno" class="hide">
+    <div class="sec-head">
+      <div><h2>Retorno do Cliente</h2><div class="sub">Segunda: pergunte a cada cliente sobre os leads da semana. Quarta: cobre quem não respondeu. Salva automaticamente neste navegador.</div></div>
+      <div class="seg-ctl" id="weekCtl"></div>
+    </div>
+    <div class="callout" id="retHint"></div>
+    <div class="card tcard"><table id="tblRet"></table></div>
+  </section>
+
+  <!-- SEMANAL -->
+  <section id="t-semanal" class="hide">
+    <div class="sec-head"><div><h2>Consolidação Semanal</h2><div class="sub">% de leads com perfil segundo o cliente. Abaixo, em cinza, o pré-filtro do formulário na mesma semana.</div></div></div>
+    <div class="card tcard"><table id="tblSem"></table></div>
+  </section>
+
+  <!-- DIARIO -->
+  <section id="t-diario" class="hide">
+    <div class="sec-head">
+      <div><h2>Pré-filtro Diário · formulário</h2><div class="sub">Leitura antecipada pelas respostas do formulário vs. ICP. Não é o número oficial: serve para agir antes do retorno do cliente.</div></div>
+      <div class="seg-ctl" id="modeCtl"><button class="on" data-m="min">Só "atende"</button><button data-m="max">Com "a confirmar"</button></div>
+    </div>
+    <div class="card tcard"><table id="tblDia"></table></div>
+  </section>
+
+  <!-- LINHA -->
+  <section id="t-linha" class="hide">
+    <div class="sec-head"><div><h2>Linha da Meta</h2><div class="sub">O que precisa ter acontecido até cada data, somando desde 15/11.</div></div></div>
+    <div class="grid g4" id="kpisMeta"></div>
+    <div class="card tcard" style="margin-top:12px"><table id="tblLinha" class="ck"></table></div>
+  </section>
+</div>
+
+<div class="ov" id="ov"><div class="modal" id="modal"></div></div>
+
+<script>
+/* =====================================================================
+   DADOS — atualize aqui.
+   leads[] = leads de formulário (pré-filtro): s = a atende · c = a confirmar · n = fora
+   O % OFICIAL vem do "Retorno do Cliente" (aba própria), preenchido semanalmente.
+   Datas em horário de Brasília. Fonte dos leads: formulários Meta (Pipeboard), 15/11 a 19/11/2026.
+   ===================================================================== */
+const DATA = {
+  ciclo:{inicio:'2026-11-15', fim:'2026-12-15', atualizadoEm:'2026-11-19', meta:30, metaContas:7},
+  semanas:[
+    {nome:'Semana 1',ini:'2026-11-15',fim:'2026-11-21'},
+    {nome:'Semana 2',ini:'2026-11-22',fim:'2026-11-28'},
+    {nome:'Semana 3',ini:'2026-11-29',fim:'2026-12-05'},
+    {nome:'Semana 4',ini:'2026-12-06',fim:'2026-12-12'},
+    {nome:'Semana 5',ini:'2026-12-13',fim:'2026-12-15'}
+  ],
+  linha:[
+    {ate:'2026-11-23',txt:'Sabemos quantos leads prestam hoje em cada conta, e a meta de 30% está confirmada',tipo:'base'},
+    {ate:'2026-11-30',txt:'Os clientes respondendo toda semana e cada conta vermelha com um plano de ajuste',tipo:'proc'},
+    {ate:'2026-12-07',txt:'4 das 8 contas com 30% ou mais',tipo:'n',n:4},
+    {ate:'2026-12-14',txt:'7 das 8 contas com 30% ou mais',tipo:'n',n:7},
+    {ate:'2026-12-15',txt:'Fechamento: 7 de 8, contando de 02/12 a 15/12',tipo:'n',n:7}
+  ],
+  contas:[
+    { id:'solar', nome:'Solar Tech', seg:'Energia solar · Vale Europeu e Alto Vale',
+      icp:{ resumo:'Fatura de energia acima de R$ 600/mês.',
+        criterios:['Valor médio da conta de luz acima de R$ 600','Residência, comércio ou rural com imóvel próprio'],
+        atende:'Marcou fatura de R$ 800 ou mais (formulário principal) ou R$ 600 ou mais (formulário Black Friday).',
+        confirmar:'Marcou fatura de R$ 500 a R$ 800: a faixa passa pelo corte de R$ 600, o SDR confirma.',
+        fora:'Fatura até R$ 500 (ou até R$ 600 no formulário Black Friday).',
+        nota:'Formulário Black Friday "O Sol Paga a Conta": 11 leads, todos com conta até R$ 600.'},
+      leads:[
+        {n:'Euclides',d:'2026-11-15T02:57',c:'Vale Europeu',r:'Fatura R$ 500–800',s:'c'},
+        {n:'Maicon',d:'2026-11-15T07:20',c:'Vale Europeu',r:'Fatura R$ 300–500',s:'n'},
+        {n:'Elizabete',d:'2026-11-15T07:30',c:'Vale Europeu',r:'Fatura R$ 500–800',s:'c'},
+        {n:'Cleo',d:'2026-11-15T11:41',c:'Vale Europeu',r:'Fatura acima de R$ 1.500',s:'a'},
+        {n:'Lourival',d:'2026-11-15T13:39',c:'Vale Europeu',r:'Fatura R$ 800–1.500',s:'a'},
+        {n:'Simone',d:'2026-11-15T15:27',c:'Vale Europeu',r:'Fatura R$ 300–500',s:'n'},
+        {n:'Alexandre',d:'2026-11-16T10:18',c:'Alto Vale',r:'Fatura R$ 300–500',s:'n'},
+        {n:'Eliseu',d:'2026-11-16T15:32',c:'Vale Europeu',r:'Fatura R$ 300–500',s:'n'},
+        {n:'Jéssica',d:'2026-11-16T17:20',c:'Vale Europeu',r:'Fatura R$ 800–1.500',s:'a'},
+        {n:'Ricardo',d:'2026-11-17T12:49',c:'Vale Europeu',r:'Fatura R$ 300–500',s:'n'},
+        {n:'Claudinei',d:'2026-11-17T18:10',c:'Vale Europeu',r:'Fatura até R$ 300',s:'n'},
+        {n:'Rosineide',d:'2026-11-17T19:35',c:'Vale Europeu',r:'Fatura R$ 800–1.500',s:'a'},
+        {n:'Catia',d:'2026-11-17T20:15',c:'Alto Vale',r:'Fatura R$ 300–500',s:'n'},
+        {n:'Rodrigo',d:'2026-11-18T11:29',c:'Vale Europeu',r:'Fatura até R$ 300',s:'n'},
+        {n:'Fabio',d:'2026-11-19T08:10',c:'Alto Vale',r:'Fatura até R$ 300',s:'n'},
+        {n:'Veronica',d:'2026-11-15T00:40',c:'Black Friday · Alto Vale',r:'Fatura até R$ 300',s:'n'},
+        {n:'Maicon Marcel',d:'2026-11-15T06:46',c:'Black Friday · Alto Vale',r:'Fatura R$ 300–600',s:'n'},
+        {n:'Pedro Paulo',d:'2026-11-15T15:07',c:'Black Friday · Alto Vale',r:'Fatura R$ 300–600',s:'n'},
+        {n:'Ronei',d:'2026-11-16T13:25',c:'Black Friday · Alto Vale',r:'Fatura até R$ 300',s:'n'},
+        {n:'Davi',d:'2026-11-18T00:21',c:'Black Friday · Alto Vale',r:'Fatura R$ 300–600',s:'n'},
+        {n:'Anderson',d:'2026-11-18T13:10',c:'Black Friday · Vale Europeu',r:'Fatura R$ 300–600',s:'n'},
+        {n:'Sônia',d:'2026-11-18T14:01',c:'Black Friday · Vale Europeu',r:'Fatura R$ 300–600',s:'n'},
+        {n:'Anderson (2)',d:'2026-11-18T21:17',c:'Black Friday · Vale Europeu',r:'Fatura R$ 300–600',s:'n'},
+        {n:'Nino',d:'2026-11-18T23:52',c:'Black Friday · Vale Europeu',r:'Fatura R$ 300–600',s:'n'},
+        {n:'Gabriel',d:'2026-11-19T08:25',c:'Black Friday · Vale Europeu',r:'Fatura R$ 300–600',s:'n'},
+        {n:'Cleiton',d:'2026-11-19T09:53',c:'Black Friday · Vale Europeu',r:'Fatura R$ 300–600',s:'n'}
+      ]},
+    { id:'roberto', nome:'Roberto Carlos', seg:'Imóveis · RJ (Ilha Stay e Fio Pontal)',
+      icp:{ resumo:'Entrada de 10% do imóvel e compra em até 20 dias, com foco no investidor.',
+        criterios:['Entrada mínima de 10% do valor: Ilha Stay R$ 350 mil (R$ 35 mil) · Fio Pontal studio R$ 288 mil (R$ 28,8 mil)','Financiamento: depende da construtora (administradora não; demais sim)','Pré-aprovação: não exige','Decisão: varia bastante (casal, sócio)','Objetivo: os dois, principalmente investidor','Região: Centro, Barra Olímpica, Barra da Tijuca e Recreio','Prazo para lead quente: até 20 dias'],
+        atende:'Entrada acima do mínimo do empreendimento e compra "em até 1 mês".',
+        confirmar:'Ilha Stay com entrada de R$ 30–50 mil e compra em até 1 mês (a faixa passa pelo corte de R$ 35 mil).',
+        fora:'Entrada abaixo do mínimo ou prazo de 2 a 6 meses.',
+        nota:'O Jorge preencheu os dois formulários: contado 1 vez, no Fio Pontal.'},
+      leads:[
+        {n:'Yasmin',d:'2026-11-15T00:31',c:'Ilha Stay',r:'Entrada < R$ 30 mil · 1 mês',s:'n'},
+        {n:'Salomão',d:'2026-11-15T08:30',c:'Ilha Stay',r:'Entrada < R$ 30 mil · 1 mês',s:'n'},
+        {n:'Carlos Roberto',d:'2026-11-15T10:00',c:'Ilha Stay',r:'Entrada R$ 50–80 mil · 6 meses',s:'n'},
+        {n:'Leize',d:'2026-11-15T12:51',c:'Ilha Stay',r:'Entrada < R$ 30 mil · 3 meses',s:'n'},
+        {n:'Christiane',d:'2026-11-15T14:38',c:'Ilha Stay',r:'Entrada R$ 50–80 mil · 6 meses',s:'n'},
+        {n:'Valmir',d:'2026-11-15T15:16',c:'Ilha Stay',r:'Entrada R$ 50–80 mil · 6 meses',s:'n'},
+        {n:'César',d:'2026-11-15T19:11',c:'Ilha Stay',r:'Entrada < R$ 30 mil · 6 meses',s:'n'},
+        {n:'Gerson',d:'2026-11-16T07:26',c:'Ilha Stay',r:'Entrada R$ 30–50 mil · 1 mês',s:'c'},
+        {n:'Elson',d:'2026-11-16T18:41',c:'Ilha Stay',r:'Entrada < R$ 30 mil · 5 meses',s:'n'},
+        {n:'Edson',d:'2026-11-16T19:55',c:'Fio Pontal',r:'Entrada R$ 160–200 mil · 1 mês',s:'a'},
+        {n:'Jorge',d:'2026-11-17T14:09',c:'Fio Pontal',r:'Entrada R$ 30–50 mil · 1 mês',s:'a'},
+        {n:'Agnese',d:'2026-11-17T18:51',c:'Ilha Stay',r:'Entrada < R$ 30 mil · 1 mês',s:'n'},
+        {n:'Diego',d:'2026-11-17T20:39',c:'Ilha Stay',r:'Entrada R$ 30–50 mil · 1 mês',s:'c'},
+        {n:'Marcio',d:'2026-11-17T22:39',c:'Ilha Stay',r:'Entrada R$ 160–200 mil · 1 mês',s:'a'},
+        {n:'Pedro',d:'2026-11-17T23:19',c:'Ilha Stay',r:'Entrada R$ 30–50 mil · 2 meses',s:'n'},
+        {n:'Shirley',d:'2026-11-18T03:32',c:'Ilha Stay',r:'Entrada < R$ 30 mil · 1 mês',s:'n'},
+        {n:'Lucianne',d:'2026-11-19T01:58',c:'Fio Pontal',r:'Entrada R$ 30–50 mil · 2 meses',s:'n'}
+      ]},
+    { id:'victor', nome:'Victor Santos', seg:'Imóveis · LND (Hyde Park e Ruáh Park)',
+      icp:{ resumo:'Entrada mínima do empreendimento, compra em até 2 semanas e quem decide na conversa.',
+        criterios:['Entrada mínima: Lançamento Timbó R$ 120 mil · Hyde Park R$ 440 mil · Ruáh Park R$ 170 mil','Hyde Park: fluxo direto com a construtora (40% de entrada, saldo em 24x com reforços)','Ruáh Park e Lançamento Timbó: só fluxo direto (na planta)','Pré-aprovação: ideal, mas não impede','Decisão: quem realmente tem o poder de decisão','Objetivo: Hyde para morar · Ruáh morar ou investir · Timbó para investir','Região: Timbó e Porto Belo, médio/alto padrão','Prazo para lead quente: até 2 semanas','Não quer: quem busca o primeiro imóvel tendo que parcelar a entrada'],
+        atende:'Entrada acima do mínimo do empreendimento e compra "em até 1 mês".',
+        confirmar:'Hyde Park com entrada de R$ 350–500 mil e compra em até 1 mês (a faixa passa pelo corte de R$ 440 mil).',
+        fora:'Entrada abaixo do mínimo ou prazo de 3 a 6 meses.',
+        nota:'A Daiani (Hyde, entrada R$ 350–500 mil, 1 mês) entrou em 13/11, antes do ciclo.'},
+      leads:[
+        {n:'Erick',d:'2026-11-15T05:20',c:'Hyde Park',r:'Entrada R$ 30–50 mil · 6 meses',s:'n'},
+        {n:'Laerte',d:'2026-11-15T08:21',c:'Hyde Park',r:'Entrada R$ 350–500 mil · 3 meses',s:'n'},
+        {n:'Morgana',d:'2026-11-15T17:44',c:'Ruáh Park',r:'Entrada R$ 30–50 mil · 1 mês',s:'n'},
+        {n:'Jamilly',d:'2026-11-19T11:39',c:'Hyde Park',r:'Entrada R$ 30–50 mil · 6 meses',s:'n'}
+      ]},
+    { id:'priorizze', nome:'Priorizze', seg:'Móveis planejados · Blumenau, Indaial, Timbó',
+      icp:{ resumo:'Casal de 28 a 45 anos, classe B/B+, apartamento novo ou em obra, ticket de R$ 40 a 80 mil.',
+        criterios:['Adulto de 28 a 45 anos, classe B/B+, casado','Apartamento novo (últimos 6 meses) ou em obra','Blumenau, Indaial, Timbó ou Gaspar','Renda familiar de R$ 12 a 25 mil','Parcela em 24 a 36x','Ticket real de R$ 40 a 80 mil (1 a 3 ambientes)'],
+        atende:'Cidade do ICP, em obra ou obra pronta, e investimento de R$ 30–60 mil ou acima.',
+        confirmar:'Cidade e fase do ICP, mas escolheu "prefiro conversar" no investimento.',
+        fora:'Ainda pesquisando, investimento até R$ 30 mil ou cidade fora da região.',
+        nota:'O formulário não pergunta renda, idade nem estado civil: esses itens só o SDR confirma.'},
+      leads:[
+        {n:'Edevandro',d:'2026-11-15T09:55',c:'Blumenau + Indaial',r:'Outra cidade · obra pronta · R$ 30–60 mil',s:'n'},
+        {n:'Junior (corretor)',d:'2026-11-16T06:52',c:'Timbó isolado',r:'Indaial · em obra · R$ 15–30 mil',s:'n'},
+        {n:'Ana Paula',d:'2026-11-16T16:12',c:'Timbó isolado',r:'Indaial · obra pronta · até R$ 15 mil',s:'n'},
+        {n:'Roberto Alves',d:'2026-11-16T22:47',c:'Blumenau + Indaial',r:'Gaspar · obra pronta · prefere conversar',s:'c'},
+        {n:'Paulo Sergio',d:'2026-11-18T08:25',c:'Timbó isolado',r:'Indaial · pesquisando · prefere conversar',s:'n'}
+      ]},
+    { id:'w2', nome:'W2 Engenharia', seg:'Construção · Vale do Itajaí', pend:'Aguardando ICP', icp:null, leads:[]},
+    { id:'josiane', nome:'Josiane Adam', seg:'Imóveis · Portugal, EUA, Agro, SP/CWB',
+      icp:{ resumo:'Exterior: produto de Porto Belo (R$ 600–700 mil). Agro e SP/CWB: alto padrão a partir de R$ 1,2 milhão.',
+        criterios:['<b>Portugal e EUA · Porto Belo:</b> entrada de ~R$ 123 mil em 4x, mensais de R$ 4 mil em 100x, mais reforços. Total de R$ 600 a 700 mil','<b>Agro e SP + Curitiba · alto padrão:</b> piso de R$ 1,2 milhão','No exterior, o formulário não pergunta quanto a pessoa pode investir: conta telefone real do país e intenção clara','Portugal: o SDR confirma na 1ª ligação se a pessoa tem ~€ 20 mil de entrada'],
+        atende:'<b>Portugal/EUA:</b> telefone real do país e intenção clara (MQL provisório até o SDR confirmar ~€ 20 mil). <b>Agro e SP/CWB:</b> faixa acima de R$ 700 mil.',
+        confirmar:'Agro/SP com faixa até R$ 700 mil: fica abaixo do alto padrão, mas cabe no produto de Porto Belo (direcionar).',
+        fora:'Telefone inválido ou nome falso.',
+        nota:'Campanhas voltaram em 17/11. Custo por MQL de 17 a 19/11: Portugal R$ 59 · SP/CWB R$ 85 · Agro R$ 192 · EUA sem MQL (R$ 153 gastos). Confirmar na ligação: Castor (disse Bahia, DDD 65 é MT) e Justiça Castela (nome parece apelido).'},
+      leads:[
+        {n:'We Karl…',d:'2026-11-17T14:08',c:'EUA',r:'Moradia futura · nome sem sentido',s:'n'},
+        {n:'Paulo Jorge',d:'2026-11-17T21:27',c:'Portugal',r:'Moradia futura · tel. +351',s:'a'},
+        {n:'Norbee Blanc',d:'2026-11-18T22:27',c:'Portugal',r:'Investimento · tel. inválido +1000000000',s:'n'},
+        {n:'Castor Tennis',d:'2026-11-19T00:02',c:'Agro',r:'Patrimônio · R$ 1,5–3 mi · confirmar estado',s:'a'},
+        {n:'Teresa Martins',d:'2026-11-19T09:02',c:'Portugal',r:'Moradia futura · tel. +351',s:'a'},
+        {n:'Humberto Reis',d:'2026-11-19T11:15',c:'Portugal',r:'Investimento · tel. +351',s:'a'},
+        {n:'Fernando Baran',d:'2026-11-19T15:29',c:'SP + Curitiba',r:'Patrimônio · até R$ 700 mil · direcionar p/ Porto Belo',s:'c'},
+        {n:'Justiça Castela',d:'2026-11-19T16:43',c:'SP + Curitiba',r:'Morar · R$ 1,5–3 mi · confirmar nome',s:'a'}
+      ]},
+    { id:'inkaza', nome:'Inkaza', seg:'Imóveis · Alphaville / Oeste SP', pend:'Conta parada · sem saldo',
+      icp:{ resumo:'Comprador com fôlego para o ato/entrada e a parcela média de cada empreendimento.',
+        criterios:['<b>Alpha Park View:</b> entrada a partir de R$ 599 mil (2 suítes, citado em call) · ato de R$ 30 mil · pró-soluto em até 32x · parcela média R$ 2.500','<b>NID Alphaville:</b> entrada de R$ 50 mil · parcela média R$ 3.000 · fluxo de obra em até 24x','<b>Breeze:</b> entrada de R$ 20 mil · entrega 08/2028 · pró-soluto em até 36x · parcela média R$ 1.500 · voucher de R$ 10 mil'],
+        nota:'Conta sem veiculação desde 15/11 (saldo R$ 0,02). A % começa a contar quando a campanha voltar a rodar.'},
+      leads:[]},
+    { id:'abrii', nome:'ABRii · Evento 12/12', seg:'A Prática das Vendas', pend:'Definir o que conta como lead', icp:null, leads:[]}
+  ]
+};
+
+
+/* ===================== estado salvo ===================== */
+const LSK='abrii-meta-icp-v2';
+let STORE={ov:{},ret:{}};
+try{const x=JSON.parse(localStorage.getItem(LSK)||'null');if(x)STORE={ov:x.ov||{},ret:x.ret||{}}}catch(e){}
+function save(){try{localStorage.setItem(LSK,JSON.stringify(STORE))}catch(e){}}
+let MODE='min', WEEK=0;
+const st=(c,l)=>STORE.ov[c.id+'|'+l.n+'|'+l.d]||l.s;
+
+/* ===================== utilidades ===================== */
+const META=DATA.ciclo.meta, HOJE=DATA.ciclo.atualizadoEm, W=DATA.semanas;
+const fmtD=s=>{const [y,m,d]=s.slice(0,10).split('-');return d+'/'+m};
+const dow=s=>['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'][new Date(s.slice(0,10)+'T12:00').getDay()];
+function days(a,b){const o=[];let d=new Date(a+'T12:00');const e=new Date(b+'T12:00');while(d<=e){o.push(d.toISOString().slice(0,10));d.setDate(d.getDate()+1)}return o}
+const DIAS=days(DATA.ciclo.inicio,HOJE);
+const pc=p=>p==null?'—':p.toFixed(0)+'%';
+const pp=p=>p==null?'—':(p-META>=0?'+':'')+(p-META).toFixed(0)+' pp';
+function cls(p){if(p==null)return'na';if(p>=META)return'ok';if(p>=20)return'warn';return'bad'}
+const colorOf=k=>k==='ok'?'var(--ok)':k==='warn'?'var(--warn)':k==='bad'?'var(--bad)':'var(--soft)';
+
+/* pré-filtro (formulário) */
+function pre(c,from,to){
+  const L=c.leads.filter(l=>{const d=l.d.slice(0,10);return(!from||d>=from)&&(!to||d<=to)});
+  const a=L.filter(l=>st(c,l)==='a').length, cf=L.filter(l=>st(c,l)==='c').length, t=L.length;
+  return {t,a,c:cf,n:t-a-cf,min:t?a/t*100:null,max:t?(a+cf)/t*100:null};
+}
+const preV=s=>MODE==='min'?s.min:s.max;
+function preAll(from,to){let t=0,a=0,c=0;DATA.contas.forEach(x=>{const s=pre(x,from,to);t+=s.t;a+=s.a;c+=s.c});return{t,a,c,n:t-a-c,min:t?a/t*100:null,max:t?(a+c)/t*100:null}}
+
+/* retorno do cliente (oficial) */
+const retGet=(c,wi)=>STORE.ret[c.id+'|'+wi]||{};
+function fb(c,wis){ // wis: array of week idx (default all)
+  wis=wis||W.map((_,i)=>i); let leads=0,perfil=0,sem=0,nf=0,resp=0;
+  wis.forEach(i=>{const r=retGet(c,i);if(r.leads!=null&&r.leads!==''){resp++;leads+=+r.leads||0;perfil+=+r.perfil||0;sem+=+r.sem||0;nf+=+r.nf||0}});
+  return{leads,perfil,sem,nf,resp,p:leads?perfil/leads*100:null};
+}
+function fbAll(wis){let l=0,p=0,s=0,n=0;DATA.contas.forEach(c=>{const x=fb(c,wis);l+=x.leads;p+=x.perfil;s+=x.sem;n+=x.nf});return{leads:l,perfil:p,sem:s,nf:n,p:l?p/l*100:null}}
+const acimaN=wis=>DATA.contas.filter(c=>{const v=fb(c,wis).p;return v!=null&&v>=META}).length;
+const respondeuN=wi=>DATA.contas.filter(c=>{const r=retGet(c,wi);return r.leads!=null&&r.leads!==''}).length;
+const weekIdxOf=d=>W.findIndex(w=>d>=w.ini&&d<=w.fim);
+const curWeek=Math.max(0,weekIdxOf(HOJE));
+
+/* ===================== gráfico ===================== */
+function chart(el,cats,s1,s2){ // s1 = principal (roxo), s2 = secundário (lilás); valores % ou null
+  const Wd=560,H=230,pl=38,pr=12,pt=16,pb=30,iw=Wd-pl-pr,ih=H-pt-pb,n=cats.length,g=iw/n,bw=Math.min(26,g*0.32);
+  const X=i=>pl+g*(i+.5), y=v=>pt+ih-(Math.min(v,100)/100)*ih;
+  let s=`<svg viewBox="0 0 ${Wd} ${H}" width="100%">`;
+  [0,25,50,75,100].forEach(v=>s+=`<line x1="${pl}" x2="${Wd-pr}" y1="${y(v)}" y2="${y(v)}" stroke="#EEEAF6"/><text x="${pl-6}" y="${y(v)+4}" font-size="10" fill="#8A8698" text-anchor="end">${v}%</text>`);
+  cats.forEach((c,i)=>{
+    const bars=[[s1[i],'#7C3AED',-bw/2-2],[s2?s2[i]:undefined,'#C4B5FD',bw/2+2]].filter(b=>b[0]!==undefined);
+    bars.forEach(([v,col,off])=>{const cx=X(i)+(s2?off:0);
+      if(v==null){s+=`<text x="${cx}" y="${y(0)-5}" font-size="9" fill="#B9B5C6" text-anchor="middle">—</text>`;return}
+      s+=`<rect x="${cx-bw/2}" y="${y(v)}" width="${bw}" height="${Math.max(1,y(0)-y(v))}" rx="5" fill="${col}"/><text x="${cx}" y="${y(v)-5}" font-size="10" fill="${col==='#7C3AED'?'#5B21B6':'#8B7FB8'}" text-anchor="middle" font-weight="600">${pc(v)}</text>`});
+    s+=`<text x="${X(i)}" y="${H-10}" font-size="10.5" fill="#6E6A80" text-anchor="middle">${c}</text>`});
+  s+=`<line x1="${pl}" x2="${Wd-pr}" y1="${y(META)}" y2="${y(META)}" stroke="#A78BFA" stroke-width="2" stroke-dasharray="6 5"/><text x="${Wd-pr}" y="${y(META)-5}" font-size="10" fill="#7C3AED" text-anchor="end" font-weight="700">META 30%</text></svg>`;
+  el.innerHTML=s;
+}
+const wkCats=()=>W.map((w,i)=>'Sem '+(i+1));
+
+/* ===================== render ===================== */
+function funnel(el,f){
+  const max=Math.max(f.leads,1),rows=[['Leads entregues',f.leads,'#7C3AED'],['Com perfil (cliente)',f.perfil,'#6D28D9'],['Sem perfil',f.sem,'#9CA3AF'],['Não conseguiu falar',f.nf,'#C4B5FD']];
+  if(!f.leads){const s=f._pre;if(!s||!s.t){el.innerHTML='<div class="hint" style="padding:30px 0;text-align:center">Sem leads no ciclo.</div>';return}
+    const mx=Math.max(s.t,1),rr=[['Leads de formulário',s.t,'#A78BFA'],['Atende o ICP',s.a,'#7C3AED'],['A confirmar',s.c,'#6D28D9'],['Fora do ICP',s.n,'#9CA3AF']];
+    el.innerHTML='<div class="pill gray" style="margin-bottom:8px">Pré-filtro do formulário · aguardando retorno do cliente</div>'+rr.map((r,i)=>(i===1?`<div class="fs">↓ ${(r[1]/s.t*100).toFixed(1)}% no ICP</div>`:i>1?'<div class="fs">&nbsp;</div>':'')+`<div class="fb" style="width:${Math.max(36,r[1]/mx*100)}%;background:${r[2]}"><span>${r[0]}</span><span>${r[1]}</span></div>`).join('');return}
+  el.innerHTML=rows.map((r,i)=>(i===1?`<div class="fs">↓ ${(r[1]/f.leads*100).toFixed(1)}% com perfil</div>`:i>1?'<div class="fs">&nbsp;</div>':'')+`<div class="fb" style="width:${Math.max(36,r[1]/max*100)}%;background:${r[2]}"><span>${r[0]}</span><span>${r[1]}</span></div>`).join('');
+}
+function render(){
+  document.getElementById('subline').textContent=`Ciclo ${fmtD(DATA.ciclo.inicio)} a ${fmtD(DATA.ciclo.fim)}/2026 · meta: ${DATA.ciclo.metaContas} de ${DATA.contas.length} contas com 30% ou mais dos leads com perfil (segundo o cliente) · leads de formulário até ${fmtD(HOJE)}`;
+  const tot=fbAll(), acima=acimaN(), resp=respondeuN(curWeek), pAll=preAll();
+  document.getElementById('kpis').innerHTML=`
+   <div class="card hero"><div class="lbl">Contas ≥ 30% · retorno</div><div class="big">${acima} de ${DATA.contas.length}</div><div class="hint">Meta ${DATA.ciclo.metaContas} de ${DATA.contas.length} até 15/12</div></div>
+   <div class="card"><div class="lbl">% com perfil · carteira</div><div class="big" style="color:${colorOf(cls(tot.p))}">${pc(tot.p)}</div><div class="hint">${tot.p==null?'aguardando retorno dos clientes':pp(tot.p)+' vs. 30% · '+tot.perfil+'/'+tot.leads}</div></div>
+   <div class="card"><div class="lbl">Clientes respondendo · Sem ${curWeek+1}</div><div class="big">${resp} de ${DATA.contas.length}</div><div class="hint">Apoio 1 · meta 7 de 8 toda semana</div></div>
+   <div class="card"><div class="lbl">Pré-filtro formulário</div><div class="big" style="color:var(--muted)">${pc(pAll.min)}</div><div class="hint">${pAll.a} de ${pAll.t} leads atendem o ICP · ${pAll.c} a confirmar</div></div>`;
+  const cl=document.getElementById('clients');
+  cl.innerHTML=DATA.contas.map(c=>{
+    const f=fb(c),k=cls(f.p),p=pre(c);
+    const kp=cls(p.min), hasF=f.p!=null, shown=hasF?f.p:p.min, ks=hasF?k:kp;
+    const top=hasF?`<div class="lbl" style="margin-top:10px;color:var(--p2)">✔ Retorno do cliente</div><div class="pct" style="margin-top:2px;color:${colorOf(k)}">${pc(f.p)}</div><div class="range">${f.perfil} de ${f.leads} com perfil · pré-filtro ${pc(p.min)}</div>`
+      :p.t?`<div class="lbl" style="margin-top:10px">Pré-filtro · aguardando retorno</div><div class="pct" style="margin-top:2px;color:${colorOf(kp)}">${pc(p.min)}</div><div class="range">${p.a} de ${p.t} leads no ICP · ${p.c} a confirmar · ${p.n} fora</div>`
+      :`<div class="lbl" style="margin-top:10px">&nbsp;</div><div class="pct" style="margin-top:2px;color:var(--soft);font-size:22px">${c.icp?'Sem leads':'Sem ICP'}</div><div class="range">${c.pend||'Sem leads de formulário no ciclo'}</div>`;
+    const pill=shown!=null?`<span class="pill ${ks}">${pp(shown)} vs. 30%</span>`:`<span class="pill gray">${c.icp?'ICP definido':'Aguardando ICP'}</span>`;
+    const preTxt=hasF?'':(p.t?'<span class="tagf">aguardando retorno</span>':'');
+    return `<div class="card cl" data-id="${c.id}"><div class="name">${c.nome}</div><div class="seg">${c.seg}</div>${top}
+      <div class="bar"><div class="fill" style="width:${Math.min(shown||0,100)}%;background:${hasF?'var(--p)':'#A78BFA'}"></div><div class="mark" style="left:30%" title="Meta 30%"></div></div>
+      <div class="meta-row">${pill}<span class="hint">${preTxt}</span></div></div>`}).join('');
+  cl.querySelectorAll('.cl').forEach(e=>e.onclick=()=>openModal(e.dataset.id));
+  tot._pre=preAll();funnel(document.getElementById('funAll'),tot);
+  chart(document.getElementById('chartAll'),wkCats(),W.map((w,i)=>fbAll([i]).p),W.map(w=>w.ini>HOJE?null:preAll(w.ini,w.fim).min));
+  renderRet();renderSem();renderDia();renderLinha();renderMql();
+}
+
+function renderMql(){
+  document.getElementById('mqlGrid').innerHTML=DATA.contas.map(c=>{const p=pre(c),f=fb(c);
+    if(!c.icp)return `<div class="card icp"><div class="meta-row"><div><div class="name" style="font-weight:700;font-size:15px">${c.nome}</div><div class="seg" style="font-size:12px;color:var(--muted)">${c.seg}</div></div><span class="pill gray">${c.pend||'Aguardando ICP'}</span></div><p class="hint" style="margin-top:12px">ICP ainda não definido com o cliente.</p></div>`;
+    return `<div class="card icp"><div class="meta-row"><div><div style="font-weight:700;font-size:15px">${c.nome}</div><div style="font-size:12px;color:var(--muted)">${c.seg}</div></div>
+      <span class="pill ${f.p!=null?cls(f.p):cls(p.min)}">${f.p!=null?'Retorno '+pc(f.p):p.t?'Pré-filtro '+pc(p.min):'Sem leads'}</span></div>
+      <div style="font-weight:600;margin:12px 0 4px">${c.icp.resumo}</div><ul>${c.icp.criterios.map(x=>`<li>${x}</li>`).join('')}</ul>
+      ${c.icp.atende?`<div class="rule"><span class="pill ok">MQL</span><span>${c.icp.atende}</span></div><div class="rule"><span class="pill warn">A confirmar</span><span>${c.icp.confirmar}</span></div><div class="rule"><span class="pill bad">Fora</span><span>${c.icp.fora}</span></div>`:''}
+      ${c.icp.nota?`<div class="note">${c.icp.nota}</div>`:''}
+      <div style="margin-top:10px"><button class="btn" onclick="openModal('${c.id}')">Ver leads e progressão</button></div></div>`}).join('');
+}
+function renderRet(){
+  document.getElementById('weekCtl').innerHTML=W.map((w,i)=>`<button class="${i===WEEK?'on':''}" data-w="${i}">Sem ${i+1} · ${fmtD(w.ini)}–${fmtD(w.fim)}</button>`).join('');
+  document.querySelectorAll('#weekCtl button').forEach(b=>b.onclick=()=>{WEEK=+b.dataset.w;renderRet()});
+  const w=W[WEEK];
+  document.getElementById('retHint').innerHTML=`<b>Semana ${WEEK+1} (${fmtD(w.ini)} a ${fmtD(w.fim)})</b> · ${respondeuN(WEEK)} de ${DATA.contas.length} clientes responderam. Em <b>Leads entregues</b> some formulário + WhatsApp. O número em cinza é quantos leads de formulário o Meta registrou na semana, para referência.`;
+  let h='<tr><th>Cliente</th><th>Leads entregues</th><th>Com perfil</th><th>Sem perfil</th><th>Não conseguiu falar</th><th>% com perfil</th><th>vs. 30%</th><th>Pré-filtro</th></tr>';
+  DATA.contas.forEach(c=>{
+    const r=retGet(c,WEEK), p=pre(c,w.ini,w.fim), f=fb(c,[WEEK]), k=cls(f.p);
+    const inp=(f,ph)=>`<input class="num" type="number" min="0" data-c="${c.id}" data-f="${f}" value="${r[f]??''}" placeholder="${ph}">`;
+    h+=`<tr><td><b>${c.nome}</b>${!c.icp?'<span class="tagf">sem ICP</span>':''}</td>
+      <td>${inp('leads',p.t||'')} </td><td>${inp('perfil','')}</td><td>${inp('sem','')}</td><td>${inp('nf','')}</td>
+      <td>${f.p==null?'<span class="cell c-na">—</span>':`<span class="cell c-${k}">${pc(f.p)}</span>`}</td>
+      <td>${f.p==null?'—':`<span class="pill ${k}">${pp(f.p)}</span>`}</td>
+      <td class="src">${p.t?`${pc(p.min)} · ${p.a}/${p.t}`:'—'}</td></tr>`});
+  const fa=fbAll([WEEK]);
+  h+=`<tr class="tot"><td>Carteira</td><td>${fa.leads}</td><td>${fa.perfil}</td><td>${fa.sem}</td><td>${fa.nf}</td><td>${pc(fa.p)}</td><td>${pp(fa.p)}</td><td>${pc(preAll(w.ini,w.fim).min)}</td></tr>`;
+  const t=document.getElementById('tblRet');t.innerHTML=h;
+  t.querySelectorAll('input.num').forEach(i=>i.onchange=()=>{const key=i.dataset.c+'|'+WEEK;const r=STORE.ret[key]||{};r[i.dataset.f]=i.value===''?undefined:+i.value;
+    if(i.dataset.f!=='leads'&&(r.leads==null)){r.leads=(+r.perfil||0)+(+r.sem||0)+(+r.nf||0)}
+    if(Object.values(r).every(v=>v==null))delete STORE.ret[key];else STORE.ret[key]=r;save();render()});
+}
+function fcell(f,p){ // retorno + pré-filtro
+  const top=f.p==null?'<span class="cell c-na">sem retorno</span>':`<span class="cell c-${cls(f.p)}">${pc(f.p)}</span><span class="small">${pp(f.p)} · ${f.perfil}/${f.leads}</span>`;
+  return top+(p&&p.t?`<span class="small" style="color:var(--soft)">pré ${pc(p.min)} · ${p.a}/${p.t}</span>`:'');
+}
+function renderSem(){
+  let h='<tr><th>Cliente</th>'+W.map((w,i)=>`<th>Semana ${i+1}<span class="small" style="text-transform:none;letter-spacing:0">${fmtD(w.ini)}–${fmtD(w.fim)}</span></th>`).join('')+'<th class="tot">Total do ciclo</th></tr>';
+  DATA.contas.forEach(c=>{h+=`<tr><td><b>${c.nome}</b></td>`+W.map((w,i)=>w.ini>HOJE?'<td><span class="cell c-na">—</span></td>':`<td>${fcell(fb(c,[i]),pre(c,w.ini,w.fim))}</td>`).join('')+`<td class="tot">${fcell(fb(c),pre(c))}</td></tr>`});
+  h+=`<tr><td><b>Carteira</b></td>`+W.map((w,i)=>w.ini>HOJE?'<td>—</td>':`<td>${fcell(fbAll([i]),preAll(w.ini,w.fim))}</td>`).join('')+`<td class="tot">${fcell(fbAll(),preAll())}</td></tr>`;
+  h+='<tr><td><b>Clientes respondendo</b></td>'+W.map((w,i)=>w.ini>HOJE?'<td>—</td>':`<td><b>${respondeuN(i)}</b> de ${DATA.contas.length}</td>`).join('')+'<td class="tot">meta 7 de 8</td></tr>';
+  h+='<tr><td><b>Contas ≥ 30%</b></td>'+W.map((w,i)=>w.ini>HOJE?'<td>—</td>':`<td><b>${acimaN([i])}</b> de ${DATA.contas.length}</td>`).join('')+`<td class="tot">${acimaN()} de ${DATA.contas.length}</td></tr>`;
+  document.getElementById('tblSem').innerHTML=h;
+}
+function pcell(s){const v=preV(s);if(!s.t)return'<span class="cell c-na">s/ lead</span>';const k=cls(v);return `<span class="cell c-${k}">${pc(v)}</span><span class="small">${pp(v)} · ${MODE==='min'?s.a:s.a+s.c}/${s.t}</span>`}
+function renderDia(){
+  const at=DATA.contas.filter(c=>c.icp&&c.leads.length);
+  let h='<tr><th>Cliente</th>'+DIAS.map(d=>`<th>${fmtD(d)} <span style="color:var(--soft);font-weight:500">${dow(d)}</span></th>`).join('')+'<th class="tot">Ciclo</th></tr>';
+  at.forEach(c=>h+=`<tr><td><b>${c.nome}</b></td>`+DIAS.map(d=>`<td>${pcell(pre(c,d,d))}</td>`).join('')+`<td class="tot">${pcell(pre(c))}</td></tr>`);
+  h+='<tr><td><b>Carteira</b></td>'+DIAS.map(d=>`<td>${pcell(preAll(d,d))}</td>`).join('')+`<td class="tot">${pcell(preAll())}</td></tr>`;
+  DATA.contas.filter(c=>!(c.icp&&c.leads.length)).forEach(c=>h+=`<tr><td style="color:var(--muted)">${c.nome}</td><td colspan="${DIAS.length+1}"><span class="pill gray">${c.pend||'Sem leads de formulário'}</span></td></tr>`);
+  document.getElementById('tblDia').innerHTML=h;
+}
+function renderLinha(){
+  const comIcp=DATA.contas.filter(c=>c.icp).length, acima=acimaN();
+  document.getElementById('kpisMeta').innerHTML=`
+    <div class="card hero"><div class="lbl">Hoje · retorno do cliente</div><div class="big">${acima} de ${DATA.contas.length}</div><div class="hint">contas com 30% ou mais</div></div>
+    <div class="card"><div class="lbl">Contas com ICP definido</div><div class="big">${comIcp} de ${DATA.contas.length}</div><div class="hint">Base para 23/11</div></div>
+    <div class="card"><div class="lbl">Clientes respondendo</div><div class="big">${respondeuN(curWeek)} de ${DATA.contas.length}</div><div class="hint">Semana ${curWeek+1}</div></div>
+    <div class="card"><div class="lbl">Fechamento</div><div class="big">15/12</div><div class="hint">Conta de 02/12 a 15/12</div></div>`;
+  let h='<tr><th>Até</th><th>O que precisa ter acontecido</th><th>Real hoje</th><th>Status</th></tr>';
+  DATA.linha.forEach(l=>{let real='—',pill='<span class="pill gray">Pendente</span>';
+    if(l.tipo==='base'){const comRet=DATA.contas.filter(c=>fb(c).resp>0).length;real=`${comIcp} de 8 com ICP · ${comRet} de 8 com % pelo cliente`;pill=(comIcp===8&&comRet===8)?'<span class="pill ok">OK</span>':`<span class="pill ${HOJE<=l.ate?'warn':'bad'}">Em andamento</span>`}
+    if(l.tipo==='proc'){const r=respondeuN(curWeek);real=`${r} de 8 clientes respondendo`;pill=r>=7?'<span class="pill ok">OK</span>':`<span class="pill ${HOJE<l.ate?'warn':'bad'}">Faltam ${7-r}</span>`}
+    if(l.tipo==='n'){real=`${acima} de 8 contas`;pill=acima>=l.n?'<span class="pill ok">Atingido</span>':`<span class="pill ${HOJE<l.ate?'warn':'bad'}">Faltam ${l.n-acima}</span>`}
+    h+=`<tr><td>${dow(l.ate)} ${fmtD(l.ate)}</td><td style="white-space:normal">${l.txt}</td><td>${real}</td><td>${pill}</td></tr>`});
+  document.getElementById('tblLinha').innerHTML=h;
+}
+
+/* ===================== modal ===================== */
+function openModal(id){
+  const c=DATA.contas.find(x=>x.id===id), m=document.getElementById('modal'), f=fb(c), p=pre(c), k=cls(f.p);
+  const icpHtml=c.icp?`<div style="font-weight:600;margin-bottom:6px">${c.icp.resumo}</div><ul>${c.icp.criterios.map(x=>`<li>${x}</li>`).join('')}</ul>
+     ${c.icp.atende?`<p class="ctitle" style="margin-top:14px">Régua do pré-filtro (formulário)</p>
+     <div class="rule"><span class="pill ok">Atende</span><span>${c.icp.atende}</span></div>
+     <div class="rule"><span class="pill warn">A confirmar</span><span>${c.icp.confirmar}</span></div>
+     <div class="rule"><span class="pill bad">Fora</span><span>${c.icp.fora}</span></div>`:''}
+     ${c.icp.nota?`<div class="note">${c.icp.nota}</div>`:''}`
+    :`<span class="pill gray">${c.pend||'Aguardando ICP'}</span><p class="hint" style="margin-top:10px">Assim que o ICP for definido, ele aparece aqui.</p>`;
+  const wkRows=W.map((w,i)=>{if(w.ini>HOJE)return'';const r=fb(c,[i]),pr=pre(c,w.ini,w.fim);
+    return `<tr><td><b>Semana ${i+1}</b> <span class="src">${fmtD(w.ini)}–${fmtD(w.fim)}</span></td><td>${r.resp?r.leads:'—'}</td><td>${r.resp?r.perfil:'—'}</td><td>${r.resp?r.sem:'—'}</td><td>${r.resp?r.nf:'—'}</td><td>${r.p==null?'<span class="cell c-na">sem retorno</span>':`<span class="cell c-${cls(r.p)}">${pc(r.p)}</span>`}</td><td class="src">${pr.t?pc(pr.min)+' · '+pr.a+'/'+pr.t:'—'}</td></tr>`}).join('');
+  m.innerHTML=`<button class="x" onclick="closeM()">×</button><a class="crumb" href="#" onclick="closeM();return false">← Clientes</a>
+   <h1 style="font-size:21px;margin-top:4px">${c.nome}</h1><p class="sub">${c.seg}</p>
+   <div class="grid g4" style="margin-top:16px">
+     <div class="card hero"><div class="lbl">% com perfil · cliente</div><div class="big">${f.p==null?'—':pc(f.p)}</div><div class="hint">${f.p==null?'aguardando retorno':pp(f.p)+' vs. meta 30%'}</div></div>
+     <div class="card"><div class="lbl">Leads entregues</div><div class="big">${f.resp?f.leads:'—'}</div><div class="hint">${f.resp} semana(s) com retorno</div></div>
+     <div class="card"><div class="lbl">Com perfil</div><div class="big" style="color:var(--ok)">${f.resp?f.perfil:'—'}</div><div class="hint">segundo o cliente</div></div>
+     <div class="card"><div class="lbl">Pré-filtro formulário</div><div class="big" style="color:var(--muted)">${pc(p.min)}</div><div class="hint">${p.t?`${p.a}/${p.t} atendem · ${p.c} a confirmar`:'sem leads de formulário'}</div></div>
+   </div>
+   <div class="grid g2" style="margin-top:12px">
+     <div class="card icp"><p class="ctitle">ICP definido com o cliente</p>${icpHtml}</div>
+     <div class="card"><p class="ctitle">Progressão semanal vs. 30%</p><div id="mChart"></div>
+       <div class="legend"><span><i style="background:var(--p)"></i>Retorno do cliente</span><span><i style="background:#C4B5FD"></i>Pré-filtro</span><span><i style="height:0;border-top:2px dashed #A78BFA"></i>Meta 30%</span></div>
+       <p class="ctitle" style="margin-top:16px">Funil</p><div class="fun" id="mFun"></div></div>
+   </div>
+   <div class="card tcard" style="margin-top:12px"><div style="padding:14px 16px 0"><p class="ctitle">Retorno semana a semana</p></div>
+     <table><tr><th>Semana</th><th>Leads</th><th>Com perfil</th><th>Sem perfil</th><th>Não falou</th><th>% com perfil</th><th>Pré-filtro</th></tr>${wkRows}</table></div>
+   ${c.leads.length?`<div class="card tcard" style="margin-top:12px"><div style="padding:14px 16px 0"><p class="ctitle">Leads de formulário · pré-filtro pelo ICP</p><div class="hint" style="margin:-6px 0 6px">Use para orientar a pergunta ao cliente na segunda. Ajuste o status se o SDR confirmar.</div></div>
+     <table><tr><th>Data</th><th>Lead</th><th>Campanha</th><th>Resposta no formulário</th><th>Pré-filtro</th></tr>
+     ${c.leads.slice().sort((a,b)=>b.d.localeCompare(a.d)).map(l=>{const x=st(c,l);return `<tr><td>${fmtD(l.d)} ${l.d.slice(11,16)}</td><td><b>${l.n}</b></td><td>${l.c}</td><td>${l.r}</td><td><select class="st" data-k="${c.id}|${l.n}|${l.d}" data-orig="${l.s}">
+       <option value="a" ${x==='a'?'selected':''}>✅ Atende</option><option value="c" ${x==='c'?'selected':''}>🟠 A confirmar</option><option value="n" ${x==='n'?'selected':''}>❌ Fora</option></select></td></tr>`}).join('')}</table></div>`:''}`;
+  chart(document.getElementById('mChart'),wkCats(),W.map((w,i)=>fb(c,[i]).p),W.map(w=>w.ini>HOJE?null:pre(c,w.ini,w.fim).min));
+  f._pre=p;funnel(document.getElementById('mFun'),f);
+  m.querySelectorAll('select.st').forEach(sel=>sel.onchange=()=>{const key=sel.dataset.k;if(sel.value===sel.dataset.orig)delete STORE.ov[key];else STORE.ov[key]=sel.value;save();render();openModal(id)});
+  document.getElementById('ov').classList.add('on');
+}
+function closeM(){document.getElementById('ov').classList.remove('on')}
+document.getElementById('ov').onclick=e=>{if(e.target.id==='ov')closeM()};
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeM()});
+
+/* ===================== controles ===================== */
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));t.classList.add('on');['painel','mql','retorno','semanal','diario','linha'].forEach(n=>document.getElementById('t-'+n).classList.toggle('hide',n!==t.dataset.t))});
+document.querySelectorAll('#modeCtl button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#modeCtl button').forEach(x=>x.classList.remove('on'));b.classList.add('on');MODE=b.dataset.m;renderDia()});
+document.getElementById('exportBtn').onclick=()=>{
+  const b=new Blob([JSON.stringify({exportadoEm:new Date().toISOString(),store:STORE},null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='meta-icp-retornos-'+new Date().toISOString().slice(0,10)+'.json';a.click();
+};
+document.getElementById('importBtn').onclick=()=>document.getElementById('importFile').click();
+document.getElementById('importFile').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const x=JSON.parse(r.result).store;STORE={ov:x.ov||{},ret:x.ret||{}};save();render()}catch(err){alert('Arquivo inválido')}};r.readAsText(f)};
+WEEK=curWeek;
+render();
+</script>
+</body>
+</html>
