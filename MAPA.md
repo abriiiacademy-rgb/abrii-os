@@ -11,7 +11,7 @@ _Varredura do banco em 02/11/2026; atualizada pela `/varredura` do Mac do Adrian
 | CRM (ABRiilead) | Supabase `crm` | `tenants` | Railan (Adrian tem acesso) | Leads, deals, atividades, integrações Meta/WhatsApp/Chatfuel/3C+, cobrança Asaas |
 | Worktesk | abrii-worktesk.vercel.app — Supabase próprio **yanvqenzhdzbuxrbeyit** — repo `railanjunior/abrii-worktesk` (pessoal, **não** está na org) | ? | Railan | Horas do time, daily e review semanal operacional |
 | Ferramenta Financeira | **Firebase** confirmado + Vercel `abrii-financeiro` (dashboard HTML) e `abrii-asaas-webhook` (Asaas → Firebase) | ? | Railan | DRE, recebimentos, saldo diário |
-| Painel Meta ICP (tráfego) | GitHub Pages `abrii-os/ferramentas/meta-icp/` (HTML estático, dados no próprio arquivo + localStorage) | 8 contas do ciclo | Adrian | % de leads com perfil vs. meta de 30% (ciclo 15/11–15/12/2026): ICP/MQL por cliente, pré-filtro dos formulários Meta e retorno semanal do cliente |
+| Painel Meta ICP (tráfego) | GitHub Pages `abrii-os/ferramentas/meta-icp/` (HTML estático; leads no arquivo; retornos em `public.meta_icp_retornos` e `public.meta_icp_status`, migração 002, com cópia no localStorage) | 8 contas do ciclo | Adrian | % de leads com perfil vs. meta de 30% (ciclo 15/11–15/12/2026): ICP/MQL por cliente, pré-filtro dos formulários Meta e retorno semanal do cliente |
 | Portal (hub de login) | Supabase `public` | `organizations` | ? | `tools` + `tool_access`: Worktesk, Orion, ABRiilead, Apply, SGM |
 
 Fora do escopo: Apply (`apply`). Orion já foi decidido excluir.

@@ -109,6 +109,7 @@
   <div class="head" style="margin-top:6px">
     <h1>Meta do Ciclo · Leads com Perfil</h1>
     <span class="pill lav">Gestor de Resultado · Tráfego Pago</span>
+    <span class="pill warn" id="dbStatus">Conectando ao banco…</span>
   </div>
   <p class="sub" id="subline"></p>
 
@@ -150,7 +151,7 @@
   <!-- RETORNO -->
   <section id="t-retorno" class="hide">
     <div class="sec-head">
-      <div><h2>Retorno do Cliente</h2><div class="sub">Segunda: pergunte a cada cliente sobre os leads da semana. Quarta: cobre quem não respondeu. Salva automaticamente neste navegador.</div></div>
+      <div><h2>Retorno do Cliente</h2><div class="sub">Segunda: pergunte a cada cliente sobre os leads da semana. Quarta: cobre quem não respondeu. Salva automaticamente no banco da ABRii.</div></div>
       <div class="seg-ctl" id="weekCtl"></div>
     </div>
     <div class="callout" id="retHint"></div>
@@ -327,6 +328,32 @@ const LSK='abrii-meta-icp-v2';
 let STORE={ov:{},ret:{}};
 try{const x=JSON.parse(localStorage.getItem(LSK)||'null');if(x)STORE={ov:x.ov||{},ret:x.ret||{}}}catch(e){}
 function save(){try{localStorage.setItem(LSK,JSON.stringify(STORE))}catch(e){}}
+/* ===================== banco (Supabase ABRii memória) ===================== */
+const SB={url:'https://huwlikdosgknyfoykjwn.supabase.co',key:'sb_publishable_W7CCZPac4r_s4pvAi91fTQ_Th9YSKxE'};
+let DB_OK=false, DB_MSG='Conectando ao banco…';
+const sbH=(x)=>Object.assign({apikey:SB.key,'Content-Type':'application/json'},x||{});
+async function sbGet(t){const r=await fetch(`${SB.url}/rest/v1/${t}?select=*`,{headers:sbH()});if(!r.ok)throw new Error(r.status);return r.json()}
+async function sbUpsert(t,rows,conflict){if(!rows.length)return;const r=await fetch(`${SB.url}/rest/v1/${t}?on_conflict=${conflict}`,{method:'POST',headers:sbH({Prefer:'resolution=merge-duplicates,return=minimal'}),body:JSON.stringify(rows)});if(!r.ok)throw new Error(r.status)}
+async function sbDel(t,q){const r=await fetch(`${SB.url}/rest/v1/${t}?${q}`,{method:'DELETE',headers:sbH()});if(!r.ok)throw new Error(r.status)}
+const retRow=(key,r)=>{const [c,w]=key.split('|');return{conta_id:c,semana:+w,leads:r.leads??null,perfil:r.perfil??null,sem_perfil:r.sem??null,nao_falou:r.nf??null,atualizado_em:new Date().toISOString(),origem:navigator.userAgent.slice(0,120)}};
+function setDb(ok,msg){DB_OK=ok;DB_MSG=msg;const e=document.getElementById('dbStatus');if(e){e.className='pill '+(ok?'ok':'warn');e.textContent=msg}}
+async function syncLoad(){
+  try{
+    const [rets,sts]=await Promise.all([sbGet('meta_icp_retornos'),sbGet('meta_icp_status')]);
+    const dbRet={};rets.forEach(r=>dbRet[r.conta_id+'|'+r.semana]={leads:r.leads??undefined,perfil:r.perfil??undefined,sem:r.sem_perfil??undefined,nf:r.nao_falou??undefined});
+    const dbOv={};sts.forEach(s=>dbOv[s.lead_key]=s.status);
+    // recupera o que só existe neste navegador e envia para o banco
+    const pendRet=Object.keys(STORE.ret).filter(k=>!dbRet[k]).map(k=>retRow(k,STORE.ret[k]));
+    const pendOv=Object.keys(STORE.ov).filter(k=>!dbOv[k]).map(k=>({lead_key:k,conta_id:k.split('|')[0],status:STORE.ov[k],atualizado_em:new Date().toISOString()}));
+    await sbUpsert('meta_icp_retornos',pendRet,'conta_id,semana');await sbUpsert('meta_icp_status',pendOv,'lead_key');
+    pendRet.forEach(r=>dbRet[r.conta_id+'|'+r.semana]=STORE.ret[r.conta_id+'|'+r.semana]);pendOv.forEach(o=>dbOv[o.lead_key]=o.status);
+    STORE={ret:dbRet,ov:dbOv};save();
+    setDb(true,`☁️ Salvo no banco${pendRet.length+pendOv.length?` · ${pendRet.length+pendOv.length} registro(s) recuperado(s) deste navegador`:''}`);
+    render();
+  }catch(e){setDb(false,'⚠️ Banco indisponível: salvando só neste navegador')}
+}
+async function pushRet(key){try{const r=STORE.ret[key];if(r)await sbUpsert('meta_icp_retornos',[retRow(key,r)],'conta_id,semana');else{const [c,w]=key.split('|');await sbDel('meta_icp_retornos',`conta_id=eq.${c}&semana=eq.${w}`)}setDb(true,'☁️ Salvo no banco · '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}))}catch(e){setDb(false,'⚠️ Não salvou no banco: ficou só neste navegador')}}
+async function pushOv(key){try{const s=STORE.ov[key];if(s)await sbUpsert('meta_icp_status',[{lead_key:key,conta_id:key.split('|')[0],status:s,atualizado_em:new Date().toISOString()}],'lead_key');else await sbDel('meta_icp_status','lead_key=eq.'+encodeURIComponent(key));setDb(true,'☁️ Salvo no banco')}catch(e){setDb(false,'⚠️ Não salvou no banco: ficou só neste navegador')}}
 let MODE='min', WEEK=0;
 const st=(c,l)=>STORE.ov[c.id+'|'+l.n+'|'+l.d]||l.s;
 
@@ -443,7 +470,7 @@ function renderRet(){
   const t=document.getElementById('tblRet');t.innerHTML=h;
   t.querySelectorAll('input.num').forEach(i=>i.onchange=()=>{const key=i.dataset.c+'|'+WEEK;const r=STORE.ret[key]||{};r[i.dataset.f]=i.value===''?undefined:+i.value;
     if(i.dataset.f!=='leads'&&(r.leads==null)){r.leads=(+r.perfil||0)+(+r.sem||0)+(+r.nf||0)}
-    if(Object.values(r).every(v=>v==null))delete STORE.ret[key];else STORE.ret[key]=r;save();render()});
+    if(Object.values(r).every(v=>v==null))delete STORE.ret[key];else STORE.ret[key]=r;save();render();pushRet(key)});
 }
 function fcell(f,p){ // retorno + pré-filtro
   const top=f.p==null?'<span class="cell c-na">sem retorno</span>':`<span class="cell c-${cls(f.p)}">${pc(f.p)}</span><span class="small">${pp(f.p)} · ${f.perfil}/${f.leads}</span>`;
@@ -516,7 +543,7 @@ function openModal(id){
        <option value="a" ${x==='a'?'selected':''}>✅ Atende</option><option value="c" ${x==='c'?'selected':''}>🟠 A confirmar</option><option value="n" ${x==='n'?'selected':''}>❌ Fora</option></select></td></tr>`}).join('')}</table></div>`:''}`;
   chart(document.getElementById('mChart'),wkCats(),W.map((w,i)=>fb(c,[i]).p),W.map(w=>w.ini>HOJE?null:pre(c,w.ini,w.fim).min));
   f._pre=p;funnel(document.getElementById('mFun'),f);
-  m.querySelectorAll('select.st').forEach(sel=>sel.onchange=()=>{const key=sel.dataset.k;if(sel.value===sel.dataset.orig)delete STORE.ov[key];else STORE.ov[key]=sel.value;save();render();openModal(id)});
+  m.querySelectorAll('select.st').forEach(sel=>sel.onchange=()=>{const key=sel.dataset.k;if(sel.value===sel.dataset.orig)delete STORE.ov[key];else STORE.ov[key]=sel.value;save();render();openModal(id);pushOv(key)});
   document.getElementById('ov').classList.add('on');
 }
 function closeM(){document.getElementById('ov').classList.remove('on')}
@@ -531,9 +558,10 @@ document.getElementById('exportBtn').onclick=()=>{
   const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='meta-icp-retornos-'+new Date().toISOString().slice(0,10)+'.json';a.click();
 };
 document.getElementById('importBtn').onclick=()=>document.getElementById('importFile').click();
-document.getElementById('importFile').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const x=JSON.parse(r.result).store;STORE={ov:x.ov||{},ret:x.ret||{}};save();render()}catch(err){alert('Arquivo inválido')}};r.readAsText(f)};
+document.getElementById('importFile').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const x=JSON.parse(r.result).store;STORE={ov:x.ov||{},ret:x.ret||{}};save();render();Object.keys(STORE.ret).forEach(pushRet);Object.keys(STORE.ov).forEach(pushOv)}catch(err){alert('Arquivo inválido')}};r.readAsText(f)};
 WEEK=curWeek;
 render();
+syncLoad();
 </script>
 </body>
 </html>
