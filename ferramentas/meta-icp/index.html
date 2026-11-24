@@ -100,6 +100,10 @@
   input.num:focus{outline:2px solid var(--lav2);background:#fff}
   .src{font-size:11px;color:var(--muted)}
   .tagf{display:inline-block;font-size:10.5px;padding:2px 7px;border-radius:99px;background:var(--graybg);color:#6B7280;margin-left:6px}
+  .hidebtn{position:absolute;top:12px;right:12px;border:1px solid var(--line);background:#fff;border-radius:8px;font:inherit;font-size:11px;color:var(--muted);padding:3px 8px;cursor:pointer;opacity:.55}
+  .cl:hover .hidebtn{opacity:1}
+  .hidebtn:hover{color:var(--bad);border-color:var(--badbg)}
+  .hiddenbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:12px;background:#fff;border:1px dashed var(--lav2);border-radius:12px;padding:10px 12px;font-size:12.5px;color:var(--muted)}
   .callout{background:#fff;border-left:4px solid var(--p);border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.5;box-shadow:var(--sh);margin-bottom:12px}
 </style>
 </head>
@@ -133,6 +137,7 @@
       </div>
     </div>
     <div class="grid g4" id="kpis"></div>
+    <div id="hiddenBar"></div>
     <div class="grid clients" id="clients" style="margin-top:12px"></div>
     <div class="grid g2" style="margin-top:12px">
       <div class="card"><p class="ctitle">Funil da carteira · ciclo</p><div class="fun" id="funAll"></div></div>
@@ -353,10 +358,14 @@ async function syncLoad(){
   }catch(e){setDb(false,'⚠️ Banco indisponível: salvando só neste navegador')}
 }
 async function pushRet(key){try{const r=STORE.ret[key];if(r)await sbUpsert('meta_icp_retornos',[retRow(key,r)],'conta_id,semana');else{const [c,w]=key.split('|');await sbDel('meta_icp_retornos',`conta_id=eq.${c}&semana=eq.${w}`)}setDb(true,'☁️ Salvo no banco · '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}))}catch(e){setDb(false,'⚠️ Não salvou no banco: ficou só neste navegador')}}
-async function pushOv(key){try{const s=STORE.ov[key];if(s)await sbUpsert('meta_icp_status',[{lead_key:key,conta_id:key.split('|')[0],status:s,atualizado_em:new Date().toISOString()}],'lead_key');else await sbDel('meta_icp_status','lead_key=eq.'+encodeURIComponent(key));setDb(true,'☁️ Salvo no banco')}catch(e){setDb(false,'⚠️ Não salvou no banco: ficou só neste navegador')}}
+async function pushOv(key){try{const s=STORE.ov[key];if(s)await sbUpsert('meta_icp_status',[{lead_key:key,conta_id:key.startsWith('oculto|')?key.split('|')[1]:key.split('|')[0],status:s,atualizado_em:new Date().toISOString()}],'lead_key');else await sbDel('meta_icp_status','lead_key=eq.'+encodeURIComponent(key));setDb(true,'☁️ Salvo no banco')}catch(e){setDb(false,'⚠️ Não salvou no banco: ficou só neste navegador')}}
 let MODE='min', WEEK=0;
 const st=(c,l)=>STORE.ov[c.id+'|'+l.n+'|'+l.d]||l.s;
 
+/* ===================== clientes ocultos ===================== */
+const isHidden=id=>STORE.ov['oculto|'+id]==='n';
+const VIS=()=>DATA.contas.filter(c=>!isHidden(c.id));
+function setHidden(id,hide){const k='oculto|'+id;if(hide)STORE.ov[k]='n';else delete STORE.ov[k];save();render();pushOv(k)}
 /* ===================== utilidades ===================== */
 const META=DATA.ciclo.meta, HOJE=DATA.ciclo.atualizadoEm, W=DATA.semanas;
 const fmtD=s=>{const [y,m,d]=s.slice(0,10).split('-');return d+'/'+m};
@@ -375,7 +384,7 @@ function pre(c,from,to){
   return {t,a,c:cf,n:t-a-cf,min:t?a/t*100:null,max:t?(a+cf)/t*100:null};
 }
 const preV=s=>MODE==='min'?s.min:s.max;
-function preAll(from,to){let t=0,a=0,c=0;DATA.contas.forEach(x=>{const s=pre(x,from,to);t+=s.t;a+=s.a;c+=s.c});return{t,a,c,n:t-a-c,min:t?a/t*100:null,max:t?(a+c)/t*100:null}}
+function preAll(from,to){let t=0,a=0,c=0;VIS().forEach(x=>{const s=pre(x,from,to);t+=s.t;a+=s.a;c+=s.c});return{t,a,c,n:t-a-c,min:t?a/t*100:null,max:t?(a+c)/t*100:null}}
 
 /* retorno do cliente (oficial) */
 const retGet=(c,wi)=>STORE.ret[c.id+'|'+wi]||{};
@@ -384,9 +393,9 @@ function fb(c,wis){ // wis: array of week idx (default all)
   wis.forEach(i=>{const r=retGet(c,i);if(r.leads!=null&&r.leads!==''){resp++;leads+=+r.leads||0;perfil+=+r.perfil||0;sem+=+r.sem||0;nf+=+r.nf||0}});
   return{leads,perfil,sem,nf,resp,p:leads?perfil/leads*100:null};
 }
-function fbAll(wis){let l=0,p=0,s=0,n=0;DATA.contas.forEach(c=>{const x=fb(c,wis);l+=x.leads;p+=x.perfil;s+=x.sem;n+=x.nf});return{leads:l,perfil:p,sem:s,nf:n,p:l?p/l*100:null}}
-const acimaN=wis=>DATA.contas.filter(c=>{const v=fb(c,wis).p;return v!=null&&v>=META}).length;
-const respondeuN=wi=>DATA.contas.filter(c=>{const r=retGet(c,wi);return r.leads!=null&&r.leads!==''}).length;
+function fbAll(wis){let l=0,p=0,s=0,n=0;VIS().forEach(c=>{const x=fb(c,wis);l+=x.leads;p+=x.perfil;s+=x.sem;n+=x.nf});return{leads:l,perfil:p,sem:s,nf:n,p:l?p/l*100:null}}
+const acimaN=wis=>VIS().filter(c=>{const v=fb(c,wis).p;return v!=null&&v>=META}).length;
+const respondeuN=wi=>VIS().filter(c=>{const r=retGet(c,wi);return r.leads!=null&&r.leads!==''}).length;
 const weekIdxOf=d=>W.findIndex(w=>d>=w.ini&&d<=w.fim);
 const curWeek=Math.max(0,weekIdxOf(HOJE));
 
@@ -419,12 +428,12 @@ function render(){
   document.getElementById('subline').textContent=`Ciclo ${fmtD(DATA.ciclo.inicio)} a ${fmtD(DATA.ciclo.fim)}/2026 · meta: ${DATA.ciclo.metaContas} de ${DATA.contas.length} contas com 30% ou mais dos leads com perfil (segundo o cliente) · leads de formulário até ${fmtD(HOJE)}`;
   const tot=fbAll(), acima=acimaN(), resp=respondeuN(curWeek), pAll=preAll();
   document.getElementById('kpis').innerHTML=`
-   <div class="card hero"><div class="lbl">Contas ≥ 30% · retorno</div><div class="big">${acima} de ${DATA.contas.length}</div><div class="hint">Meta ${DATA.ciclo.metaContas} de ${DATA.contas.length} até 15/12</div></div>
+   <div class="card hero"><div class="lbl">Contas ≥ 30% · retorno</div><div class="big">${acima} de ${VIS().length}</div><div class="hint">Meta ${DATA.ciclo.metaContas} de ${DATA.contas.length} até 15/12</div></div>
    <div class="card"><div class="lbl">% com perfil · carteira</div><div class="big" style="color:${colorOf(cls(tot.p))}">${pc(tot.p)}</div><div class="hint">${tot.p==null?'aguardando retorno dos clientes':pp(tot.p)+' vs. 30% · '+tot.perfil+'/'+tot.leads}</div></div>
-   <div class="card"><div class="lbl">Clientes respondendo · Sem ${curWeek+1}</div><div class="big">${resp} de ${DATA.contas.length}</div><div class="hint">Apoio 1 · meta 7 de 8 toda semana</div></div>
+   <div class="card"><div class="lbl">Clientes respondendo · Sem ${curWeek+1}</div><div class="big">${resp} de ${VIS().length}</div><div class="hint">Apoio 1 · meta 7 de 8 toda semana</div></div>
    <div class="card"><div class="lbl">Pré-filtro formulário</div><div class="big" style="color:var(--muted)">${pc(pAll.min)}</div><div class="hint">${pAll.a} de ${pAll.t} leads atendem o ICP · ${pAll.c} a confirmar</div></div>`;
   const cl=document.getElementById('clients');
-  cl.innerHTML=DATA.contas.map(c=>{
+  cl.innerHTML=VIS().map(c=>{
     const f=fb(c),k=cls(f.p),p=pre(c);
     const kp=cls(p.min), hasF=f.p!=null, shown=hasF?f.p:p.min, ks=hasF?k:kp;
     const top=hasF?`<div class="lbl" style="margin-top:10px;color:var(--p2)">✔ Retorno do cliente</div><div class="pct" style="margin-top:2px;color:${colorOf(k)}">${pc(f.p)}</div><div class="range">${f.perfil} de ${f.leads} com perfil · pré-filtro ${pc(p.min)}</div>`
@@ -432,17 +441,19 @@ function render(){
       :`<div class="lbl" style="margin-top:10px">&nbsp;</div><div class="pct" style="margin-top:2px;color:var(--soft);font-size:22px">${c.icp?'Sem leads':'Sem ICP'}</div><div class="range">${c.pend||'Sem leads de formulário no ciclo'}</div>`;
     const pill=shown!=null?`<span class="pill ${ks}">${pp(shown)} vs. 30%</span>`:`<span class="pill gray">${c.icp?'ICP definido':'Aguardando ICP'}</span>`;
     const preTxt=hasF?'':(p.t?'<span class="tagf">aguardando retorno</span>':'');
-    return `<div class="card cl" data-id="${c.id}"><div class="name">${c.nome}</div><div class="seg">${c.seg}</div>${top}
+    return `<div class="card cl" data-id="${c.id}"><button class="hidebtn" title="Ocultar da carteira" onclick="event.stopPropagation();setHidden('${c.id}',true)">Ocultar</button><div class="name">${c.nome}</div><div class="seg">${c.seg}</div>${top}
       <div class="bar"><div class="fill" style="width:${Math.min(shown||0,100)}%;background:${hasF?'var(--p)':'#A78BFA'}"></div><div class="mark" style="left:30%" title="Meta 30%"></div></div>
       <div class="meta-row">${pill}<span class="hint">${preTxt}</span></div></div>`}).join('');
   cl.querySelectorAll('.cl').forEach(e=>e.onclick=()=>openModal(e.dataset.id));
+  const hid=DATA.contas.filter(c=>isHidden(c.id));
+  document.getElementById('hiddenBar').innerHTML=hid.length?`<div class="hiddenbar"><span>👁️‍🗨️ Ocultos da carteira (${hid.length}), fora de todos os números:</span>${hid.map(c=>`<button class="btn" onclick="setHidden('${c.id}',false)">↩ Mostrar ${c.nome}</button>`).join('')}</div>`:'';
   tot._pre=preAll();funnel(document.getElementById('funAll'),tot);
   chart(document.getElementById('chartAll'),wkCats(),W.map((w,i)=>fbAll([i]).p),W.map(w=>w.ini>HOJE?null:preAll(w.ini,w.fim).min));
   renderRet();renderSem();renderDia();renderLinha();renderMql();
 }
 
 function renderMql(){
-  document.getElementById('mqlGrid').innerHTML=DATA.contas.map(c=>{const p=pre(c),f=fb(c);
+  document.getElementById('mqlGrid').innerHTML=VIS().map(c=>{const p=pre(c),f=fb(c);
     if(!c.icp)return `<div class="card icp"><div class="meta-row"><div><div class="name" style="font-weight:700;font-size:15px">${c.nome}</div><div class="seg" style="font-size:12px;color:var(--muted)">${c.seg}</div></div><span class="pill gray">${c.pend||'Aguardando ICP'}</span></div><p class="hint" style="margin-top:12px">ICP ainda não definido com o cliente.</p></div>`;
     return `<div class="card icp"><div class="meta-row"><div><div style="font-weight:700;font-size:15px">${c.nome}</div><div style="font-size:12px;color:var(--muted)">${c.seg}</div></div>
       <span class="pill ${f.p!=null?cls(f.p):cls(p.min)}">${f.p!=null?'Retorno '+pc(f.p):p.t?'Pré-filtro '+pc(p.min):'Sem leads'}</span></div>
@@ -455,9 +466,9 @@ function renderRet(){
   document.getElementById('weekCtl').innerHTML=W.map((w,i)=>`<button class="${i===WEEK?'on':''}" data-w="${i}">Sem ${i+1} · ${fmtD(w.ini)}–${fmtD(w.fim)}</button>`).join('');
   document.querySelectorAll('#weekCtl button').forEach(b=>b.onclick=()=>{WEEK=+b.dataset.w;renderRet()});
   const w=W[WEEK];
-  document.getElementById('retHint').innerHTML=`<b>Semana ${WEEK+1} (${fmtD(w.ini)} a ${fmtD(w.fim)})</b> · ${respondeuN(WEEK)} de ${DATA.contas.length} clientes responderam. Em <b>Leads entregues</b> some formulário + WhatsApp. O número em cinza é quantos leads de formulário o Meta registrou na semana, para referência.`;
+  document.getElementById('retHint').innerHTML=`<b>Semana ${WEEK+1} (${fmtD(w.ini)} a ${fmtD(w.fim)})</b> · ${respondeuN(WEEK)} de ${VIS().length} clientes responderam. Em <b>Leads entregues</b> some formulário + WhatsApp. O número em cinza é quantos leads de formulário o Meta registrou na semana, para referência.`;
   let h='<tr><th>Cliente</th><th>Leads entregues</th><th>Com perfil</th><th>Sem perfil</th><th>Não conseguiu falar</th><th>% com perfil</th><th>vs. 30%</th><th>Pré-filtro</th></tr>';
-  DATA.contas.forEach(c=>{
+  VIS().forEach(c=>{
     const r=retGet(c,WEEK), p=pre(c,w.ini,w.fim), f=fb(c,[WEEK]), k=cls(f.p);
     const inp=(f,ph)=>`<input class="num" type="number" min="0" data-c="${c.id}" data-f="${f}" value="${r[f]??''}" placeholder="${ph}">`;
     h+=`<tr><td><b>${c.nome}</b>${!c.icp?'<span class="tagf">sem ICP</span>':''}</td>
@@ -478,33 +489,33 @@ function fcell(f,p){ // retorno + pré-filtro
 }
 function renderSem(){
   let h='<tr><th>Cliente</th>'+W.map((w,i)=>`<th>Semana ${i+1}<span class="small" style="text-transform:none;letter-spacing:0">${fmtD(w.ini)}–${fmtD(w.fim)}</span></th>`).join('')+'<th class="tot">Total do ciclo</th></tr>';
-  DATA.contas.forEach(c=>{h+=`<tr><td><b>${c.nome}</b></td>`+W.map((w,i)=>w.ini>HOJE?'<td><span class="cell c-na">—</span></td>':`<td>${fcell(fb(c,[i]),pre(c,w.ini,w.fim))}</td>`).join('')+`<td class="tot">${fcell(fb(c),pre(c))}</td></tr>`});
+  VIS().forEach(c=>{h+=`<tr><td><b>${c.nome}</b></td>`+W.map((w,i)=>w.ini>HOJE?'<td><span class="cell c-na">—</span></td>':`<td>${fcell(fb(c,[i]),pre(c,w.ini,w.fim))}</td>`).join('')+`<td class="tot">${fcell(fb(c),pre(c))}</td></tr>`});
   h+=`<tr><td><b>Carteira</b></td>`+W.map((w,i)=>w.ini>HOJE?'<td>—</td>':`<td>${fcell(fbAll([i]),preAll(w.ini,w.fim))}</td>`).join('')+`<td class="tot">${fcell(fbAll(),preAll())}</td></tr>`;
-  h+='<tr><td><b>Clientes respondendo</b></td>'+W.map((w,i)=>w.ini>HOJE?'<td>—</td>':`<td><b>${respondeuN(i)}</b> de ${DATA.contas.length}</td>`).join('')+'<td class="tot">meta 7 de 8</td></tr>';
-  h+='<tr><td><b>Contas ≥ 30%</b></td>'+W.map((w,i)=>w.ini>HOJE?'<td>—</td>':`<td><b>${acimaN([i])}</b> de ${DATA.contas.length}</td>`).join('')+`<td class="tot">${acimaN()} de ${DATA.contas.length}</td></tr>`;
+  h+='<tr><td><b>Clientes respondendo</b></td>'+W.map((w,i)=>w.ini>HOJE?'<td>—</td>':`<td><b>${respondeuN(i)}</b> de ${VIS().length}</td>`).join('')+'<td class="tot">meta 7 de 8</td></tr>';
+  h+='<tr><td><b>Contas ≥ 30%</b></td>'+W.map((w,i)=>w.ini>HOJE?'<td>—</td>':`<td><b>${acimaN([i])}</b> de ${VIS().length}</td>`).join('')+`<td class="tot">${acimaN()} de ${VIS().length}</td></tr>`;
   document.getElementById('tblSem').innerHTML=h;
 }
 function pcell(s){const v=preV(s);if(!s.t)return'<span class="cell c-na">s/ lead</span>';const k=cls(v);return `<span class="cell c-${k}">${pc(v)}</span><span class="small">${pp(v)} · ${MODE==='min'?s.a:s.a+s.c}/${s.t}</span>`}
 function renderDia(){
-  const at=DATA.contas.filter(c=>c.icp&&c.leads.length);
+  const at=VIS().filter(c=>c.icp&&c.leads.length);
   let h='<tr><th>Cliente</th>'+DIAS.map(d=>`<th>${fmtD(d)} <span style="color:var(--soft);font-weight:500">${dow(d)}</span></th>`).join('')+'<th class="tot">Ciclo</th></tr>';
   at.forEach(c=>h+=`<tr><td><b>${c.nome}</b></td>`+DIAS.map(d=>`<td>${pcell(pre(c,d,d))}</td>`).join('')+`<td class="tot">${pcell(pre(c))}</td></tr>`);
   h+='<tr><td><b>Carteira</b></td>'+DIAS.map(d=>`<td>${pcell(preAll(d,d))}</td>`).join('')+`<td class="tot">${pcell(preAll())}</td></tr>`;
-  DATA.contas.filter(c=>!(c.icp&&c.leads.length)).forEach(c=>h+=`<tr><td style="color:var(--muted)">${c.nome}</td><td colspan="${DIAS.length+1}"><span class="pill gray">${c.pend||'Sem leads de formulário'}</span></td></tr>`);
+  VIS().filter(c=>!(c.icp&&c.leads.length)).forEach(c=>h+=`<tr><td style="color:var(--muted)">${c.nome}</td><td colspan="${DIAS.length+1}"><span class="pill gray">${c.pend||'Sem leads de formulário'}</span></td></tr>`);
   document.getElementById('tblDia').innerHTML=h;
 }
 function renderLinha(){
-  const comIcp=DATA.contas.filter(c=>c.icp).length, acima=acimaN();
+  const comIcp=VIS().filter(c=>c.icp).length, acima=acimaN();
   document.getElementById('kpisMeta').innerHTML=`
-    <div class="card hero"><div class="lbl">Hoje · retorno do cliente</div><div class="big">${acima} de ${DATA.contas.length}</div><div class="hint">contas com 30% ou mais</div></div>
-    <div class="card"><div class="lbl">Contas com ICP definido</div><div class="big">${comIcp} de ${DATA.contas.length}</div><div class="hint">Base para 23/11</div></div>
-    <div class="card"><div class="lbl">Clientes respondendo</div><div class="big">${respondeuN(curWeek)} de ${DATA.contas.length}</div><div class="hint">Semana ${curWeek+1}</div></div>
+    <div class="card hero"><div class="lbl">Hoje · retorno do cliente</div><div class="big">${acima} de ${VIS().length}</div><div class="hint">contas com 30% ou mais</div></div>
+    <div class="card"><div class="lbl">Contas com ICP definido</div><div class="big">${comIcp} de ${VIS().length}</div><div class="hint">Base para 23/11</div></div>
+    <div class="card"><div class="lbl">Clientes respondendo</div><div class="big">${respondeuN(curWeek)} de ${VIS().length}</div><div class="hint">Semana ${curWeek+1}</div></div>
     <div class="card"><div class="lbl">Fechamento</div><div class="big">15/12</div><div class="hint">Conta de 02/12 a 15/12</div></div>`;
   let h='<tr><th>Até</th><th>O que precisa ter acontecido</th><th>Real hoje</th><th>Status</th></tr>';
   DATA.linha.forEach(l=>{let real='—',pill='<span class="pill gray">Pendente</span>';
-    if(l.tipo==='base'){const comRet=DATA.contas.filter(c=>fb(c).resp>0).length;real=`${comIcp} de 8 com ICP · ${comRet} de 8 com % pelo cliente`;pill=(comIcp===8&&comRet===8)?'<span class="pill ok">OK</span>':`<span class="pill ${HOJE<=l.ate?'warn':'bad'}">Em andamento</span>`}
-    if(l.tipo==='proc'){const r=respondeuN(curWeek);real=`${r} de 8 clientes respondendo`;pill=r>=7?'<span class="pill ok">OK</span>':`<span class="pill ${HOJE<l.ate?'warn':'bad'}">Faltam ${7-r}</span>`}
-    if(l.tipo==='n'){real=`${acima} de 8 contas`;pill=acima>=l.n?'<span class="pill ok">Atingido</span>':`<span class="pill ${HOJE<l.ate?'warn':'bad'}">Faltam ${l.n-acima}</span>`}
+    if(l.tipo==='base'){const comRet=VIS().filter(c=>fb(c).resp>0).length;real=`${comIcp} de ${VIS().length} com ICP · ${comRet} de ${VIS().length} com % pelo cliente`;pill=(comIcp===VIS().length&&comRet===VIS().length)?'<span class="pill ok">OK</span>':`<span class="pill ${HOJE<=l.ate?'warn':'bad'}">Em andamento</span>`}
+    if(l.tipo==='proc'){const r=respondeuN(curWeek);real=`${r} de ${VIS().length} clientes respondendo`;pill=r>=7?'<span class="pill ok">OK</span>':`<span class="pill ${HOJE<l.ate?'warn':'bad'}">Faltam ${7-r}</span>`}
+    if(l.tipo==='n'){real=`${acima} de ${VIS().length} contas`;pill=acima>=l.n?'<span class="pill ok">Atingido</span>':`<span class="pill ${HOJE<l.ate?'warn':'bad'}">Faltam ${l.n-acima}</span>`}
     h+=`<tr><td>${dow(l.ate)} ${fmtD(l.ate)}</td><td style="white-space:normal">${l.txt}</td><td>${real}</td><td>${pill}</td></tr>`});
   document.getElementById('tblLinha').innerHTML=h;
 }
